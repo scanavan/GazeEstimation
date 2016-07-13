@@ -1,0 +1,35 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
+cmake_policy(VERSION 3.0)
+PROJECT(EyeTracking)
+#make sure we only build release
+SET(CMAKE_CONFIGURATION_TYPES Debug Release CACHE STRING "" FORCE)
+#set opencv directory vars
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_MULTITHREADED ON)
+SET(Boost_USE_STATIC_RUNTIME OFF)
+
+SET(BOOST_ROOT "C:/boost/boost_1_60_0")
+SET (BOOST_INCLUDEDIR "${BOOST_ROOT}/boost")
+SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/stage/lib")
+
+FIND_PACKAGE(Boost 1.60.0 COMPONENTS regex date_time system chrono thread serialization REQUIRED)
+
+ADD_DEFINITIONS(-D_WIN32_WINNT=0x0501)
+
+SET(SOURCE_DIR "source")
+SET(INCLUDE_DIR "include")
+
+INCLUDE_DIRECTORIES(include ${Boost_INCLUDE_DIRS})
+
+FILE(GLOB SOURCE_FILES ${SOURCE_DIR}/*.cpp)
+FILE(GLOB HEADER_FILES ${INCLUDE_DIR}/*.h)
+
+#header filters
+SOURCE_GROUP("Header Files" FILES ${HEADER_FILES})
+#source filters
+SOURCE_GROUP("Source Files" FILES ${SOURCE_FILES})
+
+#create exe
+ADD_EXECUTABLE(EyeTracking ${SOURCE_FILES} ${HEADER_FILES})
+#link libs
+TARGET_LINK_LIBRARIES(EyeTracking ${Boost_LIBRARIES})
