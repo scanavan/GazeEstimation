@@ -4,6 +4,8 @@
 
 struct Point
 {
+	Point(float _x, float _y) : x(_x), y(_y) {}
+	Point() : x(0.f), y(0.f) {}
 	float x;
 	float y;
 	friend std::ostream &operator<<(std::ostream& os, Point& point)
