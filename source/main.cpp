@@ -3,7 +3,7 @@
 #include <boost/array.hpp>
 #include <boost/asio/read.hpp>
 #include "EyeTrackingData.h"
-#include "NDARReader.h"
+#include "NDARData.h"
 
 //run either real time with iMotions or load NDAR data to analyze
 void RealTime();
@@ -68,5 +68,5 @@ void RealTime()
 }
 void NDAR()
 {
-	NDARReader reader;
+	NDARData reader("C:/Data/EyeTracking/AllData/et_subject_experiment01");
 }
