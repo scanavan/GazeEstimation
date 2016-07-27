@@ -68,5 +68,6 @@ void RealTime()
 }
 void NDAR()
 {
-	NDARData reader("C:/Data/EyeTracking/AllData/et_subject_experiment01");
+	NDARData reader("C:/Data/EyeTracking/AllData/test");// et_subject_experiment01");
+	reader.DisplayGazeMap(0);
 }

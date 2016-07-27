@@ -6,10 +6,23 @@
 #include "EyeTrackingData.h"	//for Point structure
 #include <boost/lexical_cast.hpp>
 
-//a lot of this is probably not necessary. 
-//May only need gaze and some distance information
-struct Data
+
+struct SmallData
 {
+	//just filename and some eye gaze data
+	std::string fileNameWithPath;
+	std::string path;
+	std::string fileName;
+
+	std::vector<Point>leftGaze;
+	std::vector<Point>rightGaze;
+	std::vector<Point>avgGaze;
+};
+struct AllData
+{
+	//all data from tsv files
+	std::string fileNameWithPath;
+	std::string path; 
 	std::string fileName;
 
 	std::vector<int>  timeStamp;
@@ -66,11 +79,14 @@ class NDARData
 {
 public:
 	NDARData(std::string tsvDirectory);
+	size_t GetNumberOfSubjects() { return tsvData.size(); }
+	void  DisplayGazeMap(int subject);
 
 private:
 	void ParseTSVFile(std::string);
-	void PopulateTSVVector(std::vector<std::string>& splitData, Data& data);
+	void PopulateTSVVectorWithSmallData(std::vector<std::string>& splitData, SmallData& data);
+	bool EyeMissing(std::vector<std::string>& data);
 	//each vector is a file, each internal vector is a timestamp
-	std::vector<Data> tsvData;
+	std::vector<SmallData> tsvData;
 };
 #endif
