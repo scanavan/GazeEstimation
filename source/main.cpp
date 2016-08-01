@@ -68,6 +68,9 @@ void RealTime()
 }
 void NDAR()
 {
-	NDARData reader("C:/Data/EyeTracking/AllData/test");// et_subject_experiment01");
-	reader.DisplayGazeMap(0);
+	NDARData reader("C:/Data/EyeTracking/AllData/TestData/tsvData/", "C:/Data/EyeTracking/AllData/TestData/SubjectData.csv");
+	for (size_t i = 0; i < reader.GetNumberOfSubjects(); ++i)
+	{
+		reader.DisplayGazeMap(static_cast<int>(i), "ASD");
+	}
 }

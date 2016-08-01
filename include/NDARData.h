@@ -6,17 +6,35 @@
 #include "EyeTrackingData.h"	//for Point structure
 #include <boost/lexical_cast.hpp>
 
-
 struct SmallData
 {
-	//just filename and some eye gaze data
-	std::string fileNameWithPath;
-	std::string path;
 	std::string fileName;
-
-	std::vector<Point>leftGaze;
-	std::vector<Point>rightGaze;
+	std::string fileNameWithPath;
 	std::vector<Point>avgGaze;
+	int age;
+	std::string gender;
+	std::string diagnosis;
+
+	std::string GetTitle()
+	{
+		std::string title("File: ");
+		title.append(fileName);
+		title.append(" age: ");
+		title.append(std::to_string(age));
+		title.append(" gender: ");
+		title.append(gender);
+		title.append(" risk: ");
+		title.append(diagnosis);
+		return title;
+	}
+	friend std::ostream &operator<<(std::ostream& os, SmallData& data)
+	{
+		os << "FileName: " << data.fileName << std::endl
+			<< "Autism Risk: " << data.diagnosis << std::endl
+			<< "Gender: " << data.gender << std::endl
+			<< "Age: " << data.age << std::endl;
+		return os;
+	}
 };
 struct AllData
 {
@@ -78,15 +96,15 @@ struct AllData
 class NDARData
 {
 public:
-	NDARData(std::string tsvDirectory);
+	NDARData(std::string tsvDirectory, std::string csvFile);
 	size_t GetNumberOfSubjects() { return tsvData.size(); }
-	void  DisplayGazeMap(int subject);
+	void  DisplayGazeMap(int subject, std::string diagnosis="all");
 
 private:
-	void ParseTSVFile(std::string);
-	void PopulateTSVVectorWithSmallData(std::vector<std::string>& splitData, SmallData& data);
-	bool EyeMissing(std::vector<std::string>& data);
-	//each vector is a file, each internal vector is a timestamp
+	bool NDARData::EyeMissing(std::vector<std::string>& data);
+	void NDARData::PopulateTSVVectorWithSmallData(std::vector<std::string>& splitData, SmallData& data);
+	void ReadCSVFile(std::string dir, std::string csvFile);
+	void ParseTSVFile(SmallData& data);
 	std::vector<SmallData> tsvData;
 };
 #endif
