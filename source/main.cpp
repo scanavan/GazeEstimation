@@ -71,6 +71,10 @@ void NDAR()
 	NDARData reader("C:/Data/EyeTracking/AllData/TestData/tsvData/", "C:/Data/EyeTracking/AllData/TestData/SubjectData.csv");
 	for (size_t i = 0; i < reader.GetNumberOfSubjects(); ++i)
 	{
-		reader.DisplayGazeMap(static_cast<int>(i), "ASD");
+		//reader.DisplayGazeMap(static_cast<int>(i), "ASD");
+		//reader.ClusterGazeData(static_cast<int>(i));
+		//reader.DisplayClusterData(static_cast<int>(i));
+		reader.GetAvgDistanceFromCentroid(static_cast<int>(i));
+		std::cout << reader.at(i) << std::endl;
 	}
 }

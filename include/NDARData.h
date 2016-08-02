@@ -14,6 +14,15 @@ struct SmallData
 	int age;
 	std::string gender;
 	std::string diagnosis;
+	int width;
+	int height;
+	float avgDistanceFromCentroid;
+	std::vector<std::vector<Point>>clusters;
+
+	SmallData() : fileName(""), fileNameWithPath(""), age(0), gender(""), diagnosis(""), width(640), height(512), avgDistanceFromCentroid(0.f)
+	{
+	}
+	
 
 	std::string GetTitle()
 	{
@@ -32,7 +41,8 @@ struct SmallData
 		os << "FileName: " << data.fileName << std::endl
 			<< "Autism Risk: " << data.diagnosis << std::endl
 			<< "Gender: " << data.gender << std::endl
-			<< "Age: " << data.age << std::endl;
+			<< "Age: " << data.age << std::endl
+			<< "Average gaze distance from centroid: " << data.avgDistanceFromCentroid << std::endl;
 		return os;
 	}
 };
@@ -99,12 +109,21 @@ public:
 	NDARData(std::string tsvDirectory, std::string csvFile);
 	size_t GetNumberOfSubjects() { return tsvData.size(); }
 	void  DisplayGazeMap(int subject, std::string diagnosis="all");
-
+	void ClusterGazeData(int subject=0);
+	void DisplayClusterData(int subject, std::string title = "Cluster Data");
+	void GetNewCentroids(Point& c1, Point& c2, Point& c3, Point& c4, std::vector<std::vector<Point>>&clusters);
+	void GetAvgDistanceFromCentroid(int subject);
+	SmallData at(size_t i)
+	{
+		return tsvData.at(i);
+	}
 private:
 	bool NDARData::EyeMissing(std::vector<std::string>& data);
 	void NDARData::PopulateTSVVectorWithSmallData(std::vector<std::string>& splitData, SmallData& data);
 	void ReadCSVFile(std::string dir, std::string csvFile);
 	void ParseTSVFile(SmallData& data);
 	std::vector<SmallData> tsvData;
+
+	float Distance(Point p1, Point p2);
 };
 #endif

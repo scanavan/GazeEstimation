@@ -13,6 +13,28 @@ struct Point
 		os << "(" << point.x << ", " << point.y << ")";
 		return os;
 	}
+	Point& operator+=(const Point& point)
+	{
+		x += point.x;
+		y += point.y;
+		return *this;
+	}
+	Point& operator/=(const Point& point)
+	{
+		x /= point.x;
+		y /= point.y;
+		return *this;
+	}
+	Point& operator/=(const size_t size)
+	{
+		x /= size;
+		y /= size;
+		return *this;
+	}
+	float Distance(Point& point)
+	{
+		return std::sqrt(std::pow((x - point.x), 2.f) + std::pow((y - point.y), 2.f));
+	}
 };
 class EyeTrackingData
 {
