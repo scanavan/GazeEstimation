@@ -3,7 +3,7 @@
 #include <boost/array.hpp>
 #include <boost/asio/read.hpp>
 #include "EyeTrackingData.h"
-#include "NDARData.h"
+#include "ASDClassification.h"
 
 //run either real time with iMotions or load NDAR data to analyze
 void RealTime();
@@ -68,13 +68,12 @@ void RealTime()
 }
 void NDAR()
 {
-	NDARData reader("C:/Data/EyeTracking/AllData/TestData/tsvData/", "C:/Data/EyeTracking/AllData/TestData/SubjectData.csv");
-	for (size_t i = 0; i < reader.GetNumberOfSubjects(); ++i)
+	ASDClassification classify;
+	classify.ReadCSVFile("C:/Data/EyeTracking/AllData/TestData/SubjectData.csv");
+	classify.ParseTSVFiles("C:/Data/EyeTracking/AllData/TestData/tsvData/");
+	
+	for (size_t i = 0; i < classify.GetNumberOfSubjects(); ++i)
 	{
-		//reader.DisplayGazeMap(static_cast<int>(i), "ASD");
-		//reader.ClusterGazeData(static_cast<int>(i));
-		//reader.DisplayClusterData(static_cast<int>(i));
-		reader.GetAvgDistanceFromCentroid(static_cast<int>(i));
-		std::cout << reader.at(i) << std::endl;
+		classify.CreateDisplayImageOfGaze(i);
 	}
 }
