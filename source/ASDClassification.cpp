@@ -99,6 +99,9 @@ void ASDClassification::ReadCSVFile(std::string csvFile)
 			sd.diagnosis = split.at(2);
 			sd.fileNameWithPath = split.at(3);
 			sd.fileName = split.at(3);
+			sd.type = boost::lexical_cast<int>(split.at(4));
+			sd.typeInfo = split.at(5);
+			std::cout << sd << std::endl;
 			data.push_back(sd);
 		}
 		else
