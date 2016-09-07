@@ -13,11 +13,13 @@ public:
 	void ParseTSVFiles(std::string tsvDir);
 	size_t GetNumberOfSubjects();
 	void CreateDisplayImageOfGaze(size_t subject);
+	void WriteArffFile(std::string file);
 
 private:
 	std::vector<SubjectData> data;
 
 	bool EyeMissing(std::vector<std::string>& data);
 	void ParseTSVFile(SubjectData& data);
+	void WriteArffGazePoints(std::ostream& out, int size);
 };
 #endif

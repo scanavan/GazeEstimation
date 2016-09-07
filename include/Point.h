@@ -2,10 +2,10 @@
 #define POINT_H
 struct Point
 {
-	Point(float _x, float _y) : x(_x), y(_y) {}
-	Point() : x(0.f), y(0.f) {}
-	float x;
-	float y;
+	Point(int _x, int _y) : x(_x), y(_y) {}
+	Point() : x(0), y(0) {}
+	int x;
+	int y;
 	friend std::ostream &operator<<(std::ostream& os, Point& point)
 	{
 		os << "(" << point.x << ", " << point.y << ")";
@@ -23,15 +23,15 @@ struct Point
 		y /= point.y;
 		return *this;
 	}
-	Point& operator/=(const size_t size)
+	Point& operator/=(const int size)
 	{
 		x /= size;
 		y /= size;
 		return *this;
 	}
-	float Distance(Point& point)
+	double Distance(Point& point)
 	{
-		return std::sqrt(std::pow((x - point.x), 2.f) + std::pow((y - point.y), 2.f));
+		return std::sqrt(std::pow((x - point.x), 2) + std::pow((y - point.y), 2));
 	}
 };
 #endif

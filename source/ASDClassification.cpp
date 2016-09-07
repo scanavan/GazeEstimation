@@ -30,6 +30,7 @@ void ASDClassification::ParseTSVFiles(std::string tsvDir)
 		ParseTSVFile(d);
 		++percent;
 	}
+	std::cout << std::endl;
 }
 void ASDClassification::ParseTSVFile(SubjectData& data)
 {
@@ -54,7 +55,7 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 			{
 				if (!EyeMissing(split))
 				{
-					data.avgGaze.emplace_back(boost::lexical_cast<float>(split.at(19)), boost::lexical_cast<float>(split.at(20)));
+					data.avgGaze.emplace_back(boost::lexical_cast<int>(split.at(19)), boost::lexical_cast<int>(split.at(20)));
 				}
 			}
 		}
@@ -65,6 +66,64 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 		}
 	}
 	in.close();
+}
+void ASDClassification::WriteArffGazePoints(std::ostream& out, int size)
+{
+	int count(0);
+	for (auto& subject : data)
+	{
+		//if (subject.type == 3)
+		{
+			int gender = 1;
+			if (subject.gender.compare("M") == 0)
+			{
+				gender = 0;
+			}
+			out << gender << "," << std::to_string(subject.age) << ",";
+			for (int i = 0; i < size; ++i)
+			{
+				out << std::to_string(subject.avgGaze.at(i).x) << "," << std::to_string(subject.avgGaze.at(i).y) << ",";
+			}
+			out << subject.diagnosis << std::endl;
+		}
+		++count;
+	}
+	std::cout << count << std::endl;
+}
+void ASDClassification::WriteArffFile(std::string file)
+{
+	std::ofstream out;
+	out.open(file);
+	out << "% 1. Title: ASD Classification\n"
+		<< "%\n"
+		<< "% 2. Sources :\n"
+		<< "% (a)Creator : NIH and Binghamton SRI 2016\n"
+		<< "% (b)Date : Fall 2016\n"
+		<< "%\n"
+		<< "@RELATION asd\n"
+		<< "\n"
+		<< "@ATTRIBUTE gender NUMERIC\n"
+		<< "@ATTRIBUTE age NUMERIC\n";
+	int size(100000);
+	for (auto& subject : data)
+	{
+		if (subject.avgGaze.size() < size)
+		{
+			size = static_cast<int>(subject.avgGaze.size());
+		}
+	}
+	for (int i = 0; i < size; ++i)
+	{
+		std::string gazeX = "gazeX_" + std::to_string(i);
+		std::string gazeY = "gazeY_" + std::to_string(i);
+		std::string gazeXLine = "@ATTRIBUTE " + gazeX + " NUMERIC";
+		std::string gazeYLine = "@ATTRIBUTE " + gazeY + " NUMERIC";
+		out << gazeXLine << std::endl << gazeYLine << std::endl;
+	}
+	out << "@ATTRIBUTE class { low, medium, high, ASD }\n"
+		<< "\n@DATA\n";
+	WriteArffGazePoints(out, size);
+	out.close();
 }
 bool ASDClassification::EyeMissing(std::vector<std::string>& data)
 {

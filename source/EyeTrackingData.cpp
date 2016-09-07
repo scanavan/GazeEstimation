@@ -31,40 +31,40 @@ void EyeTrackingData::ParseInputString(std::string input)
 		switch (i)
 		{
 		case 6:
-			leftGaze.x = boost::lexical_cast<float>(splitStringVec.at(i));
+			leftGaze.x = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 7:
-			leftGaze.y = boost::lexical_cast<float>(splitStringVec.at(i));
+			leftGaze.y = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 8:
-			rightGaze.x = boost::lexical_cast<float>(splitStringVec.at(i));
+			rightGaze.x = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 9:
-			rightGaze.y = boost::lexical_cast<float>(splitStringVec.at(i));
+			rightGaze.y = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 10:
-			leftPupilDiameter = boost::lexical_cast<float>(splitStringVec.at(i));
+			leftPupilDiameter = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 11:
-			rightPupilDiameter = boost::lexical_cast<float>(splitStringVec.at(i));
+			rightPupilDiameter = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 12:
-			leftEyeDistance = boost::lexical_cast<float>(splitStringVec.at(i));;
+			leftEyeDistance = boost::lexical_cast<int>(splitStringVec.at(i));;
 			break;
 		case 13:
-			rightEyeDistance = boost::lexical_cast<float>(splitStringVec.at(i));
+			rightEyeDistance = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 14:
-			leftEyePosition.x = boost::lexical_cast<float>(splitStringVec.at(i));
+			leftEyePosition.x = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 15:
-			leftEyePosition.y = boost::lexical_cast<float>(splitStringVec.at(i));
+			leftEyePosition.y = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 16:
-			rightEyePosition.x = boost::lexical_cast<float>(splitStringVec.at(i));
+			rightEyePosition.x = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		case 17:
-			rightEyePosition.y = boost::lexical_cast<float>(splitStringVec.at(i));
+			rightEyePosition.y = boost::lexical_cast<int>(splitStringVec.at(i));
 			break;
 		}
 	}

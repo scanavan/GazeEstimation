@@ -24,10 +24,10 @@ public:
 private:
 	Point leftGaze;
 	Point rightGaze;
-	float leftPupilDiameter;
-	float rightPupilDiameter;
-	float leftEyeDistance;
-	float rightEyeDistance;
+	int leftPupilDiameter;
+	int rightPupilDiameter;
+	int leftEyeDistance;
+	int rightEyeDistance;
 	Point leftEyePosition;
 	Point rightEyePosition;
 
