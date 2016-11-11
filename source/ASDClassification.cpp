@@ -44,7 +44,7 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 	int counter(0);
 	//file contents
 
-int numLines = 0;
+	int numLines = 0;
 
 	while (!in2.eof() || in2.peek() != EOF)
 	{
@@ -54,16 +54,16 @@ int numLines = 0;
 			break;
 		}
 		std::getline(in2, line);
-		numLines ++;
+		numLines++;
 	}
-in2.close();
-std::ifstream in(data.fileNameWithPath);
-int counter2 = 0;
+	in2.close();
+	std::ifstream in(data.fileNameWithPath);
+	int counter2 = 0;
 
-int fixCounter = 0;
-int tempFixationIndex = 0;
-std::string time1;
-std::string time2;
+	int fixCounter = 0;
+	int tempFixationIndex = 0;
+	std::string time1;
+	std::string time2;
 
 	while (!in.eof() || in.peek() != EOF)
 	{
@@ -89,52 +89,52 @@ std::string time2;
 					data.GazePointYL = boost::lexical_cast<float>(split.at(5));
 
 
-					if(!split.at(18).empty()) //make sure we actually have data
+					if (!split.at(18).empty()) //make sure we actually have data
 					{
 						data.fixationIndex = boost::lexical_cast<int>(split.at(18));
-						if(fixCounter == 0) //gets initial data
+						if (fixCounter == 0) //gets initial data
 						{
-						time1 = split.at(2); //get time, need to convert time string into something we can add
-						time2 = time1;
-						tempFixationIndex = boost::lexical_cast<int>(split.at(18));
-						fixCounter ++; //dont want if statement to repeat
+							time1 = split.at(2); //get time, need to convert time string into something we can add
+							time2 = time1;
+							tempFixationIndex = boost::lexical_cast<int>(split.at(18));
+							fixCounter++; //dont want if statement to repeat
 						}
-						else 
+						else
 						{
-						if(boost::lexical_cast<int>(split.at(18)) == tempFixationIndex)
-						{
-						time1 = split.at(2); //need to figure out how to do this
-						int hours1 = boost::lexical_cast<int>(time1.at(0)+time1.at(1));
-						int minutes1 = boost::lexical_cast<int>(time1.at(3)+time1.at(4));
-						int seconds1 = boost::lexical_cast<int>(time1.at(6));
+							if (boost::lexical_cast<int>(split.at(18)) == tempFixationIndex)
+							{
+								time1 = split.at(2); //need to figure out how to do this
+								int hours1 = boost::lexical_cast<int>(time1.at(0) + time1.at(1));
+								int minutes1 = boost::lexical_cast<int>(time1.at(3) + time1.at(4));
+								int seconds1 = boost::lexical_cast<int>(time1.at(6));
 
-						int hours2 = boost::lexical_cast<int>(time2.at(0)+time2.at(1));
-						int minutes2 = boost::lexical_cast<int>(time2.at(3)+time2.at(4));
-						int seconds2 = boost::lexical_cast<int>(time2.at(6));
+								int hours2 = boost::lexical_cast<int>(time2.at(0) + time2.at(1));
+								int minutes2 = boost::lexical_cast<int>(time2.at(3) + time2.at(4));
+								int seconds2 = boost::lexical_cast<int>(time2.at(6));
 
-						date d(2002, Feb, 1);
-						ptime t1(d, hours(hours1)+minutes(minutes1)+seconds(seconds1)+millisec(0));
-						ptime t2(d, hours(hours2)+minutes(minutes2)+seconds(seconds2)+millisec(0));
-						time_duration td = t2 - t1;
-						data.saveTime += td.seconds(); 
-						}
-						else // we are at next fixation
-						{
-						data.timeVector.push_back(data.saveTime); // save accumulated time in a vector
-						data.saveTime = 0;
-						time1 = split.at(2);
-						tempFixationIndex = boost::lexical_cast<int>(split.at(18));
+								date d(2002, Feb, 1);
+								ptime t1(d, hours(hours1) + minutes(minutes1) + seconds(seconds1) + millisec(0));
+								ptime t2(d, hours(hours2) + minutes(minutes2) + seconds(seconds2) + millisec(0));
+								time_duration td = t2 - t1;
+								data.saveTime += td.seconds();
+							}
+							else // we are at next fixation
+							{
+								data.timeVector.push_back(data.saveTime); // save accumulated time in a vector
+								data.saveTime = 0;
+								time1 = split.at(2);
+								tempFixationIndex = boost::lexical_cast<int>(split.at(18));
+							}
 						}
 					}
 				}
 			}
+			counter2++;
+			if (counter2 == numLines)
+			{
+				data.DateTime = split.at(2);
+			}
 		}
-		counter2 ++;
-		if (counter2 == numLines)
-		{
-			data.DateTime = split.at(2);
-		}
-	}
 		//this is the "header" line, the next line is the real data
 		if (line.find("TimeStamp") != std::string::npos)
 		{
@@ -169,19 +169,19 @@ void ASDClassification::WriteArffGazePoints(std::ostream& out, int size)
 				sdY += (subject.avgGaze.at(i).y * subject.avgGaze.at(i).y);
 			}
 			//add mean feature here
-			meanX = meanX/size;
-			meanY = meanY/size;
+			meanX = meanX / size;
+			meanY = meanY / size;
 			sdX = sdX - (size*(meanX*meanX));
-			sdX = sdX/(size-1);
+			sdX = sdX / (size - 1);
 			sdY = sdY - (size*(meanY*meanY));
-			sdY = sdY/(size-1);
+			sdY = sdY / (size - 1);
 			out << meanX << "," << meanY << ",";
 			out << sdX << "," << sdY << ",";
 			out << subject.diagnosis << std::endl;
 		}
 		++count;
 	}
-	std::cout << count << std::endl;
+	//std::cout << count << std::endl;
 }
 void ASDClassification::WriteArffFile(std::string file, std::string file2)
 {
@@ -199,9 +199,9 @@ void ASDClassification::WriteArffFile(std::string file, std::string file2)
 		<< "\n"
 		<< "@ATTRIBUTE gender NUMERIC\n"
 		<< "@ATTRIBUTE age NUMERIC\n";
-		//going to add a new feature here at the end
+	//going to add a new feature here at the end
 
-	//out2 << "Here is a test to see if anything is being written to file " << std::endl;
+//out2 << "Here is a test to see if anything is being written to file " << std::endl;
 	int size(100000);
 	for (auto& subject : data)
 	{
@@ -212,7 +212,7 @@ void ASDClassification::WriteArffFile(std::string file, std::string file2)
 			//out2 << subject.fileName << std::endl;
 		}
 	}
-std::cout<<size<<std::endl;
+	std::cout << size << std::endl;
 
 	for (int i = 0; i < 100000; ++i)
 	{
