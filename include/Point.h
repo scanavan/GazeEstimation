@@ -1,5 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
+#include <iostream>
+#include <cmath>
 struct Point
 {
 	Point(int _x, int _y) : x(_x), y(_y) {}
@@ -31,7 +33,7 @@ struct Point
 	}
 	double Distance(Point& point)
 	{
-		return std::sqrt(std::pow((x - point.x), 2) + std::pow((y - point.y), 2));
+		return std::sqrt(std::pow(((float)(x - point.x)), 2) + std::pow(((float)(y - point.y)), 2));
 	}
 };
 #endif

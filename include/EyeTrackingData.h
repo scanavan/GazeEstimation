@@ -2,6 +2,7 @@
 #define EYE_TRACKING_DATA_H
 #include <string>
 #include "Point.h"
+#include <iostream>
 
 class EyeTrackingData
 {

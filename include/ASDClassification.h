@@ -13,7 +13,7 @@ public:
 	void ParseTSVFiles(std::string tsvDir);
 	size_t GetNumberOfSubjects();
 	void CreateDisplayImageOfGaze(size_t subject);
-	void WriteArffFile(std::string file);
+	void WriteArffFile(std::string file, std::string file2);
 
 private:
 	std::vector<SubjectData> data;

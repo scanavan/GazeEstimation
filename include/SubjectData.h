@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Point.h"
+#include <iostream>
 
 struct SubjectData
 {
@@ -11,14 +12,39 @@ struct SubjectData
 	std::string fileNameWithPath;
 	//subject gender
 	std::string gender;
-	//autism diagnosis
+	//autism diagnosis	--> classification
 	std::string diagnosis;
 
 	//all gaze points
 	std::vector<Point>avgGaze;
 
+	std::vector<int> timeVector;
+
+	int saveTime = 0;
+
 	//age of subject
 	int age;
+
+	//participant number
+	int participantNumber;
+
+	//Time of Test
+	std::string DateTime;
+
+	//X Gaze Point Right Eye 
+	float GazePointXR;
+
+	//Y Gaze Point Right Eye 
+	float GazePointYR;
+
+	//X Gaze Point Left Eye 
+	float GazePointXL;
+
+	//Y Gaze Point LEft Eye 
+	float GazePointYL;
+
+	//Fixation Number
+	int fixationIndex;
 
 	//type of video/image watched
 	int type;
@@ -36,6 +62,12 @@ struct SubjectData
 		title.append(diagnosis);
 		title.append(" type: ");
 		title.append(std::to_string(type));
+		title.append(" Test Length: ");
+		title.append(DateTime);
+		title.append(" Number of Fixations: ");
+		title.append(std::to_string(fixationIndex));
+		title.append(" Participant Number: ");
+		title.append(std::to_string(participantNumber));
 		return title;
 	}
 	friend std::ostream &operator<<(std::ostream& os, SubjectData& sd)
@@ -45,7 +77,10 @@ struct SubjectData
 			<< "Gender: " << sd.gender << std::endl
 			<< "Risk: " << sd.diagnosis << std::endl
 			<< "Type: " << sd.type << std::endl
-			<< "Type Info: " << sd.typeInfo << std::endl;
+			<< "Type Info: " << sd.typeInfo << std::endl
+			<< "Test Length: " << sd.DateTime << std::endl
+			<< "Number of Fixations: " << sd.fixationIndex << std::endl
+			<< "Participant Number: " << sd.participantNumber << std::endl;
 		return os;
 	}
 };
