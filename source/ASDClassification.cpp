@@ -19,11 +19,14 @@ size_t ASDClassification::GetNumberOfSubjects()
 {
 	return data.size();
 }
-void ASDClassification::CreateDisplayImageOfGaze(size_t subject)
+void ASDClassification::CreateDisplayImageOfGaze()
 {
-	Image image(1280, 1024);
-	image.PlotPoints(data.at(subject).avgGaze, data.at(subject));
-	image.Display(data.at(subject).GetTitle());
+	for (size_t i = 0; i < data.size(); ++i)
+	{
+		Image image(512, 512);
+		image.PlotPoints(data.at(i).avgGaze, data.at(i));
+		image.Display(data.at(i).GetTitle());
+	}
 }
 void ASDClassification::ParseTSVFiles(std::string tsvDir)
 {
@@ -160,7 +163,7 @@ void ASDClassification::WriteArffGazePoints(std::ostream& out, int size)
 				gender = 0;
 			}
 			out << gender << "," << std::to_string(subject.age) << ",";
-			for (int i = 0; i < 100000; ++i)
+			for (int i = 0; i < size; ++i)
 			{
 				out << std::to_string(subject.avgGaze.at(i).x) << "," << std::to_string(subject.avgGaze.at(i).y) << ",";
 				meanX += subject.avgGaze.at(i).x;
@@ -185,6 +188,7 @@ void ASDClassification::WriteArffGazePoints(std::ostream& out, int size)
 }
 void ASDClassification::WriteArffFile(std::string file, std::string file2)
 {
+	std::cout << "Writing ARFF file header..." << std::endl;
 	std::ofstream out;
 	std::ofstream out2;
 	out2.open(file2);
@@ -192,16 +196,14 @@ void ASDClassification::WriteArffFile(std::string file, std::string file2)
 	out << "% 1. Title: ASD Classification\n"
 		<< "%\n"
 		<< "% 2. Sources :\n"
-		<< "% (a)Creator : NIH and Binghamton SRI 2016\n"
-		<< "% (b)Date : Fall 2016\n"
+		<< "% (a)Creator : Shaun Canavan\n"
+		<< "% (b)Date : 2017\n"
 		<< "%\n"
 		<< "@RELATION asd\n"
 		<< "\n"
 		<< "@ATTRIBUTE gender NUMERIC\n"
 		<< "@ATTRIBUTE age NUMERIC\n";
 	//going to add a new feature here at the end
-
-//out2 << "Here is a test to see if anything is being written to file " << std::endl;
 	int size(100000);
 	for (auto& subject : data)
 	{
@@ -209,12 +211,9 @@ void ASDClassification::WriteArffFile(std::string file, std::string file2)
 		if (subject.avgGaze.size() < size)
 		{
 			size = static_cast<int>(subject.avgGaze.size());
-			//out2 << subject.fileName << std::endl;
 		}
 	}
-	std::cout << size << std::endl;
-
-	for (int i = 0; i < 100000; ++i)
+	for (int i = 0; i < size; ++i)
 	{
 		std::string gazeX = "gazeX_" + std::to_string(i);
 		std::string gazeY = "gazeY_" + std::to_string(i);
@@ -231,7 +230,8 @@ void ASDClassification::WriteArffFile(std::string file, std::string file2)
 	out << sdX << std::endl << sdY << std::endl;
 	out << "@ATTRIBUTE class { low, medium, high, ASD }\n"
 		<< "\n@DATA\n";
-	WriteArffGazePoints(out, 100000);
+	std::cout << "Writing gaze points to ARFF file..." << std::endl;
+	WriteArffGazePoints(out, size);
 	out.close();
 	out2.close();
 }

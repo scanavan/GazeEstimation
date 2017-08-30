@@ -69,12 +69,8 @@ void RealTime()
 void NDAR()
 {
 	ASDClassification classify;
-	std::cout << "testing" << std::endl;
-	classify.ReadCSVFile("./TestData/SubjectData.csv");
-	classify.ParseTSVFiles("./TestData/tsvData/");
-	classify.WriteArffFile("./TestData/asd_mean_sd.arff", "./TestData/out.txt");
-	for (size_t i = 0; i < classify.GetNumberOfSubjects(); ++i)
-	{
-		classify.CreateDisplayImageOfGaze(i);
-	}
+	classify.ReadCSVFile("./GazeData/SubjectData.csv");
+	classify.ParseTSVFiles("./GazeData/tsvData/");
+	classify.WriteArffFile("./GazeData/asd_mean_sd.arff", "./GazeData/out.txt");
+	classify.CreateDisplayImageOfGaze();
 }

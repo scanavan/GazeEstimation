@@ -12,7 +12,7 @@ public:
 	void ReadCSVFile(std::string csvFile);
 	void ParseTSVFiles(std::string tsvDir);
 	size_t GetNumberOfSubjects();
-	void CreateDisplayImageOfGaze(size_t subject);
+	void CreateDisplayImageOfGaze();
 	void WriteArffFile(std::string file, std::string file2);
 
 private:
