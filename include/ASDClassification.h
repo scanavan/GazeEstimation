@@ -9,11 +9,11 @@ class ASDClassification
 {
 public:
 	ASDClassification();
-	void ReadCSVFile(std::string csvFile);
+	void ReadCSVFile(std::string csvFile, bool removeOutliers=false);
 	void ParseTSVFiles(std::string tsvDir);
 	size_t GetNumberOfSubjects();
 	void CreateDisplayImageOfGaze();
-	void WriteArffFile(std::string file, std::string file2);
+	void WriteArffFile(std::string file);
 
 private:
 	std::vector<SubjectData> data;

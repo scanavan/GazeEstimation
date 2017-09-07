@@ -18,9 +18,9 @@ struct SubjectData
 	//all gaze points
 	std::vector<Point>avgGaze;
 
-	std::vector<int> timeVector;
+	std::vector<time_t> timeVector;
 
-	int saveTime = 0;
+	time_t saveTime = 0;
 
 	//age of subject
 	int age;

@@ -69,8 +69,8 @@ void RealTime()
 void NDAR()
 {
 	ASDClassification classify;
-	classify.ReadCSVFile("./GazeData/SubjectData.csv");
+	classify.ReadCSVFile("./GazeData/SubjectData.csv", true);
 	classify.ParseTSVFiles("./GazeData/tsvData/");
-	classify.WriteArffFile("./GazeData/asd_mean_sd.arff", "./GazeData/out.txt");
-	classify.CreateDisplayImageOfGaze();
+	classify.WriteArffFile("./output/OutliersRemovedNDARGazeData.arff");
+	//classify.CreateDisplayImageOfGaze();
 }
