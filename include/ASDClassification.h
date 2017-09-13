@@ -20,6 +20,6 @@ private:
 
 	bool EyeMissing(std::vector<std::string>& data);
 	void ParseTSVFile(SubjectData& data);
-	void WriteArffGazePoints(std::ostream& out, int size);
+	void WriteArffGazeVectors(std::ostream& out);
 };
 #endif

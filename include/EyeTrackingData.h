@@ -1,7 +1,7 @@
 #ifndef EYE_TRACKING_DATA_H
 #define EYE_TRACKING_DATA_H
 #include <string>
-#include "Point.h"
+#include "Vector2D.h"
 #include <iostream>
 
 class EyeTrackingData
@@ -23,14 +23,14 @@ public:
 	}
 
 private:
-	Point leftGaze;
-	Point rightGaze;
+	Vector2D leftGaze;
+	Vector2D rightGaze;
 	int leftPupilDiameter;
 	int rightPupilDiameter;
 	int leftEyeDistance;
 	int rightEyeDistance;
-	Point leftEyePosition;
-	Point rightEyePosition;
+	Vector2D leftEyePosition;
+	Vector2D rightEyePosition;
 
 	void ParseInputString(std::string input);
 };

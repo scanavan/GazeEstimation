@@ -2,7 +2,7 @@
 #define SUBJECT_DATA_H
 #include <string>
 #include <vector>
-#include "Point.h"
+#include "Vector2D.h"
 #include <iostream>
 
 struct SubjectData
@@ -15,8 +15,8 @@ struct SubjectData
 	//autism diagnosis	--> classification
 	std::string diagnosis;
 
-	//all gaze points
-	std::vector<Point>avgGaze;
+	//all gaze Vector2Ds
+	std::vector<Vector2D>avgGaze;
 
 	std::vector<time_t> timeVector;
 
@@ -31,17 +31,17 @@ struct SubjectData
 	//Time of Test
 	std::string DateTime;
 
-	//X Gaze Point Right Eye 
-	float GazePointXR;
+	//X Gaze Vector2D Right Eye 
+	float GazeVector2DXR;
 
-	//Y Gaze Point Right Eye 
-	float GazePointYR;
+	//Y Gaze Vector2D Right Eye 
+	float GazeVector2DYR;
 
-	//X Gaze Point Left Eye 
-	float GazePointXL;
+	//X Gaze Vector2D Left Eye 
+	float GazeVector2DXL;
 
-	//Y Gaze Point LEft Eye 
-	float GazePointYL;
+	//Y Gaze Vector2D LEft Eye 
+	float GazeVector2DYL;
 
 	//Fixation Number
 	int fixationIndex;

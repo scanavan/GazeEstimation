@@ -24,7 +24,7 @@ void ASDClassification::CreateDisplayImageOfGaze()
 	for (size_t i = 0; i < data.size(); ++i)
 	{
 		Image image(512, 512);
-		image.PlotPoints(data.at(i).avgGaze, data.at(i));
+		image.PlotVector2Ds(data.at(i).avgGaze, data.at(i));
 		image.Display(data.at(i).GetTitle());
 	}
 }
@@ -86,10 +86,10 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 				if (!EyeMissing(split))
 				{
 					data.avgGaze.emplace_back(boost::lexical_cast<int>(split.at(19)), boost::lexical_cast<int>(split.at(20)));
-					data.GazePointXR = boost::lexical_cast<float>(split.at(11));
-					data.GazePointYR = boost::lexical_cast<float>(split.at(12));
-					data.GazePointXL = boost::lexical_cast<float>(split.at(4));
-					data.GazePointYL = boost::lexical_cast<float>(split.at(5));
+					data.GazeVector2DXR = boost::lexical_cast<float>(split.at(11));
+					data.GazeVector2DYR = boost::lexical_cast<float>(split.at(12));
+					data.GazeVector2DXL = boost::lexical_cast<float>(split.at(4));
+					data.GazeVector2DYL = boost::lexical_cast<float>(split.at(5));
 
 
 					if (!split.at(18).empty()) //make sure we actually have data
@@ -146,13 +146,12 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 	}
 	in.close();
 }
-void ASDClassification::WriteArffGazePoints(std::ostream& out, int size)
+void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 {
-	float sdX(0);
-	float sdY(0);
-	float meanX(0);
-	float meanY(0);
-	int count(0);
+	Vector2D sd;
+	Vector2D mean;
+	Vector2D avgVel;
+	float avgMag;
 	for (auto& subject : data)
 	{
 		//if (subject.type == 3)
@@ -163,39 +162,36 @@ void ASDClassification::WriteArffGazePoints(std::ostream& out, int size)
 				gender = 0;
 			}
 			out << gender << "," << std::to_string(subject.age) << ",";
+			int size(static_cast<int>(subject.avgGaze.size()));
 			for (int i = 0; i < size; ++i)
 			{
-				meanX += subject.avgGaze.at(i).x;
-				meanY += subject.avgGaze.at(i).y;
-				sdX += (subject.avgGaze.at(i).x * subject.avgGaze.at(i).x);
-				sdY += (subject.avgGaze.at(i).y * subject.avgGaze.at(i).y);
+				mean += subject.avgGaze.at(i);
+				sd += (subject.avgGaze.at(i)*subject.avgGaze.at(i));
+				if (i < size - 1)
+				{
+					avgVel += subject.avgGaze.at(i).Velocity(subject.avgGaze.at(i + 1));
+					avgMag += subject.avgGaze.at(i).Magnitude(subject.avgGaze.at(i + 1));
+				}
 			}
-			//add mean feature here
-			meanX = meanX / size;
-			meanY = meanY / size;
-			sdX = sdX - (size*(meanX*meanX));
-			sdX = sdX / (size - 1);
-			sdY = sdY - (size*(meanY*meanY));
-			sdY = sdY / (size - 1);
-			out << meanX << "," << meanY << ",";
-			out << sdX << "," << sdY << ",";
+			mean /= size;
+			avgVel /= size;
+			avgMag /= size - 1;
+			sd.x -= (size*(mean.x*mean.x));
+			sd.x /= (size - 1);
+			sd.y -= (size*(mean.y*mean.y));
+			sd.y /= (size - 1);
+			out << mean.x << "," << mean.y << ",";
+			out << sd.y << "," << sd.y << ",";
+			out << avgMag << ",";
+			out << avgVel.x << "," << avgVel.y << ",";
+			out << subject.timeVector.size() << ",";
 			out << subject.diagnosis << std::endl;
 		}
-		++count;
 	}
 	//std::cout << count << std::endl;
 }
 void ASDClassification::WriteArffFile(std::string file)
 {
-	//get size of data(Gaze)	
-	int size(100000);
-	for (auto& subject : data)
-	{
-		if (subject.avgGaze.size() < size)
-		{
-			size = static_cast<int>(subject.avgGaze.size());
-		}
-	}
 	std::cout << "Writing ARFF file header..." << std::endl;
 	std::ofstream out;
 	out.open(file);
@@ -213,12 +209,19 @@ void ASDClassification::WriteArffFile(std::string file)
 	std::string meanY = "@ATTRIBUTE meanY NUMERIC";
 	std::string sdX = "@ATTRIBUTE sdX NUMERIC";
 	std::string sdY = "@ATTRIBUTE sdY NUMERIC";
+	std::string mag = "@ATTRIBUTE mag NUMERIC";
+	std::string velX = "@ATTRIBUTE velX NUMERIC";
+	std::string velY = "@ATTRIBUTE velY NUMERIC";
+	std::string fix = "@ATTRIBUTE fix NUMERIC";
 	out << meanX << std::endl << meanY << std::endl;
 	out << sdX << std::endl << sdY << std::endl;
+	out << mag << std::endl;
+	out << velX << std::endl << velY << std::endl;
+	out << fix << std::endl;
 	out << "@ATTRIBUTE class { low, medium, high, ASD }\n"
 		<< "\n@DATA\n";
-	std::cout << "Writing gaze points to ARFF file..." << std::endl;
-	WriteArffGazePoints(out, size);
+	std::cout << "Writing gaze vectors to ARFF file..." << std::endl;
+	WriteArffGazeVectors(out);
 	out.close();
 }
 bool ASDClassification::EyeMissing(std::vector<std::string>& data)

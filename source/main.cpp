@@ -28,15 +28,15 @@ void RealTime()
 
 	boost::asio::ip::tcp::resolver resolver(io_service);
 	boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), "localhost", std::to_string(8088));
-	boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+	boost::asio::ip::tcp::resolver::iterator endVector2D_iterator = resolver.resolve(query);
 	boost::asio::ip::tcp::resolver::iterator end;
 
 	boost::asio::ip::tcp::socket socket(io_service);
 	boost::system::error_code error = boost::asio::error::host_not_found;
-	while (error && endpoint_iterator != end)
+	while (error && endVector2D_iterator != end)
 	{
 		socket.close();
-		socket.connect(*endpoint_iterator++, error);
+		socket.connect(*endVector2D_iterator++, error);
 	}
 	if (error)
 	{
@@ -69,8 +69,8 @@ void RealTime()
 void NDAR()
 {
 	ASDClassification classify;
-	classify.ReadCSVFile("./GazeData/SubjectData.csv", true);
+	classify.ReadCSVFile("./GazeData/SubjectData.csv");
 	classify.ParseTSVFiles("./GazeData/tsvData/");
-	classify.WriteArffFile("./output/OutliersRemovedNDARGazeData.arff");
+	classify.WriteArffFile("./output/VelocityTest.arff");
 	//classify.CreateDisplayImageOfGaze();
 }

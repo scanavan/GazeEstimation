@@ -22,22 +22,22 @@ void Image::Display(std::string title)
 		}
 	}
 }
-void Image::PlotPoints(std::vector<Point>points, SubjectData &s)
+void Image::PlotVector2Ds(std::vector<Vector2D>vectors, SubjectData &subject)
 {
-	for (auto& point : points)
+	for (auto& Vector2D : vectors)
 	{
-		cv::circle(image, cv::Point(static_cast<int>(point.y)/3, static_cast<int>(point.x)/3), 1, cv::Scalar(0, 0, 255));
+		cv::circle(image, cv::Point(static_cast<int>(Vector2D.y)/3, static_cast<int>(Vector2D.x)/3), 1, cv::Scalar(0, 0, 255));
 	}
 	//save image w/ the classification
-	size_t lastIndex = s.fileName.find_last_of(".");
-	std::string new_name = s.fileName.substr(0, lastIndex);
-	if(s.diagnosis == "low") {
+	size_t lastIndex = subject.fileName.find_last_of(".");
+	std::string new_name = subject.fileName.substr(0, lastIndex);
+	if(subject.diagnosis == "low") {
 		cv::imwrite("./GazeData/EyeGazeLow/" + new_name + ".jpg" , image);
-	} else if(s.diagnosis == "medium") {
+	} else if(subject.diagnosis == "medium") {
 		cv::imwrite("./GazeData/EyeGazeMedium/" + new_name + ".jpg", image);
-	} else if(s.diagnosis == "high") {
+	} else if(subject.diagnosis == "high") {
 		cv::imwrite("./GazeData/EyeGazeHigh/" + new_name + ".jpg", image);
-	} else if(s.diagnosis == "ASD") {
+	} else if(subject.diagnosis == "ASD") {
 		cv::imwrite("./GazeData/EyeGazeASD/" + new_name + ".jpg", image);
 	}
 }
