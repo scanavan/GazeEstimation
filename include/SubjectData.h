@@ -19,6 +19,8 @@ struct SubjectData
 	std::vector<Vector2D>avgGaze;
 
 	std::vector<time_t> timeVector;
+	// Vector to store the time at which frame happened -Diego
+	std::vector<long> frameData; 	
 
 	time_t saveTime = 0;
 

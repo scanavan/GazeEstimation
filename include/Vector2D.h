@@ -37,13 +37,15 @@ struct Vector2D
 	}
 	float Magnitude(Vector2D& vector)
 	{
+		
 		return std::sqrt(std::pow(((float)(x - vector.x)), 2) + std::pow(((float)(y - vector.y)), 2));
 	}
-	Vector2D Velocity(Vector2D& vector)
+	float Velocity(Vector2D& vector, long time_frame)
 	{
-		Vector2D velocity;
-
-		return velocity;
+		// Function returns velocity calling mangnitude to calculate the distance between two points, I left these test lines in here in case you wanted to test the things I talked about - Diego
+		//float dummie = Magnitude(vector);
+		//std::cout << "magnitude:  " << dummie << "time in ms: " << time_frame << "Velocity: " << dummie/time_frame << "X and Ys" << x << " " << y << " "<< vector.x << " " << vector.y << std::endl;
+		return Magnitude(vector)/ time_frame;
 	}
 };
 #endif
