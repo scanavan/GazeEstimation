@@ -94,12 +94,15 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 					if (!split.at(18).empty()) //make sure we actually have data
 					{
 
-					data.avgGaze.emplace_back(boost::lexical_cast<int>(split.at(19)), boost::lexical_cast<int>(split.at(20)));
-                                        data.GazeVector2DXR = boost::lexical_cast<float>(split.at(11));
-                                        data.GazeVector2DYR = boost::lexical_cast<float>(split.at(12));
-                                        data.GazeVector2DXL = boost::lexical_cast<float>(split.at(4));
-                                        data.GazeVector2DYL = boost::lexical_cast<float>(split.at(5));
-					
+						if (boost::lexical_cast<int>(split.at(19)) >= 0 && boost::lexical_cast<int>(split.at(20)) >= 0)
+						{
+							data.avgGaze.emplace_back(boost::lexical_cast<int>(split.at(19)), boost::lexical_cast<int>(split.at(20)));
+						}
+                        data.GazeVector2DXR = boost::lexical_cast<float>(split.at(11));
+                        data.GazeVector2DYR = boost::lexical_cast<float>(split.at(12));
+                        data.GazeVector2DXL = boost::lexical_cast<float>(split.at(4));
+                        data.GazeVector2DYL = boost::lexical_cast<float>(split.at(5));
+
 					std::string time = split.at(2);
 
                                         int minutes_frame = boost::lexical_cast<int>(time.substr(3,2) );
@@ -170,6 +173,13 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 		}
 	}
 	in.close();
+	//for (int i = 0; i < data.avgGaze.size(); ++i)
+	//{
+	//	if (data.avgGaze.at(i).x < 0 || data.avgGaze.at(i).y < 0)
+	//	{
+	//		std::cout << data.avgGaze.at(i).x << " " << data.avgGaze.at(i).y << " - " << i << std::endl;
+	//	}
+	//}
 }
 void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 {
@@ -306,7 +316,10 @@ void ASDClassification::ReadCSVFile(std::string csvFile, bool removeOutliers)
 			sd.fileName = split.at(3);
 			sd.type = boost::lexical_cast<int>(split.at(4));
 			sd.typeInfo = split.at(5);
-			data.push_back(sd);
+			if (sd.type != -1)
+			{
+				data.push_back(sd);
+			}
 		}
 		else
 		{

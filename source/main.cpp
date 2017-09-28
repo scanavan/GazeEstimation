@@ -71,6 +71,6 @@ void NDAR()
 	ASDClassification classify;
 	classify.ReadCSVFile("./GazeData/SubjectData.csv");
 	classify.ParseTSVFiles("./GazeData/tsvData/");
-	classify.WriteArffFile("./output/VelocityTest.arff");
+	classify.WriteArffFile("./output/VelocityTestNew.arff");
 	//classify.CreateDisplayImageOfGaze();
 }
