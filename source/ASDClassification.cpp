@@ -93,7 +93,7 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 				{
 					if (!split.at(18).empty()) //make sure we actually have data
 					{
-					// Moved this fragment to inner loop, since it says here is when we have actual data, tried it classifying with both placements before adding velocity, and it yielded to same results - Diego
+
 					data.avgGaze.emplace_back(boost::lexical_cast<int>(split.at(19)), boost::lexical_cast<int>(split.at(20)));
                                         data.GazeVector2DXR = boost::lexical_cast<float>(split.at(11));
                                         data.GazeVector2DYR = boost::lexical_cast<float>(split.at(12));
@@ -101,7 +101,7 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
                                         data.GazeVector2DYL = boost::lexical_cast<float>(split.at(5));
 					
 					std::string time = split.at(2);
-					// See comment in the next else, inside of the if statement to see how this works -Diego 
+
                                         int minutes_frame = boost::lexical_cast<int>(time.substr(3,2) );
                                         int seconds_frame = boost::lexical_cast<int>(time.substr(6,2));
 					int millisec_frame = boost::lexical_cast<int>(time.substr(9,3));
@@ -126,30 +126,20 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 							if (boost::lexical_cast<int>(split.at(18)) == tempFixationIndex)
 							{
 								time1 = split.at(2); //need to figure out how to do this
-								/* In contrast to the method used above, .at() returns a character, adding time.at(X) with time.at(Y)
-								 returns the sum of the 2 ASCII values, then that is parsed into an Integer. Example, the first parsed row from
-								the TSV file (pathTo/tsvData/316s09v01-All-Data.tsv) is row 241, the time offset for this is 00:00:03.513, 
-								which is the value of time1, 
-								 Example, 
-								minutes1 = grabs time1.at(3) + time.at(4) which we can see that corresponds to 0 and 0
-								however .at() returns a character,
-								so we have '0' + '0' which correspond to ASCII value of 48, so it will give 96 and that will get parsed. 	
-								I did not touch any of this code below, but at first I tried to use this method, and this is what I found out.
-								Using substr() which returns a str will make the summation concatenate the strings. 
-								This can be testing printing out t_duration, and frameTime, and looking at row 241 of the mentioned file.
-								-Diego 
-								*/
-								int hours1 = boost::lexical_cast<int>(time1.at(0) + time1.at(1));	
-								int minutes1 = boost::lexical_cast<int>(time1.at(3) + time1.at(4));
-								int seconds1 = boost::lexical_cast<int>(time1.at(6));
 
-								int hours2 = boost::lexical_cast<int>(time2.at(0) + time2.at(1));
-								int minutes2 = boost::lexical_cast<int>(time2.at(3) + time2.at(4));
-								int seconds2 = boost::lexical_cast<int>(time2.at(6));
+								int hours1 = boost::lexical_cast<int>(time1.substr(0,2));	
+								int minutes1 = boost::lexical_cast<int>(time1.substr(3,2));
+								int seconds1 = boost::lexical_cast<int>(time1.substr(6,2));
+								int millisec1 = boost::lexical_cast<int>(time1.substr(9,3));
+								
+								int hours2 = boost::lexical_cast<int>(time2.substr(0,2));
+								int minutes2 = boost::lexical_cast<int>(time2.substr(3,2));
+								int seconds2 = boost::lexical_cast<int>(time2.substr(6,2));
+								int millisec2 = boost::lexical_cast<int>(time2.substr(9,3));								
 
 								date d(2002, Feb, 1);
-								ptime t1(d, hours(hours1) + minutes(minutes1) + seconds(seconds1) + millisec(0));
-								ptime t2(d, hours(hours2) + minutes(minutes2) + seconds(seconds2) + millisec(0));
+								ptime t1(d, hours(hours1) + minutes(minutes1) + seconds(seconds1) + millisec(millisec1));
+								ptime t2(d, hours(hours2) + minutes(minutes2) + seconds(seconds2) + millisec(millisec2));
 								time_duration td = t2 - t1;
 								data.saveTime += td.seconds();
 							}
@@ -161,6 +151,9 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 								tempFixationIndex = boost::lexical_cast<int>(split.at(18));
 							}
 						}
+					} else {
+					// If we get here it means we did not have fixation time in tsv file. 
+					++data.OutOfMonitor;
 					}
 				}
 			}
@@ -182,8 +175,10 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 {
 	Vector2D sd;
 	Vector2D mean;
+	Vector2D velocity;
 	float avgVel;
 	float avgMag;
+
 	for (auto& subject : data)
 	{
 		//if (subject.type == 3)
@@ -195,29 +190,35 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 			}
 			out << gender << "," << std::to_string(subject.age) << ",";
 			int size(static_cast<int>(subject.avgGaze.size()));
+			Vector2D temp; 
 			for (int i = 0; i < size; ++i)
 			{
 				mean += subject.avgGaze.at(i);
 				sd += (subject.avgGaze.at(i)*subject.avgGaze.at(i));
+				
 				if (i < size - 1)
 				{
-					// We pass the other vector and the difference of the time in which the frame happened to our velocity function, which will calculate 
-					// The velocity from one frame to the other. -Diego
-					avgVel += subject.avgGaze.at(i).Velocity(subject.avgGaze.at(i + 1), (subject.frameData.at(i+1) - subject.frameData.at(i)) ); 
+					avgVel += subject.avgGaze.at(i).Velocity_overall(subject.avgGaze.at(i + 1), (subject.frameData.at(i+1) - subject.frameData.at(i)) ); 
 					avgMag += subject.avgGaze.at(i).Magnitude(subject.avgGaze.at(i + 1));
+					velocity += subject.avgGaze.at(i).Velocity_points(subject.avgGaze.at(i + 1), (subject.frameData.at(i+1) - subject.frameData.at(i)));	
 				}
 			}
 			mean /= size;
-			avgVel /= size;
+			avgVel /= size - 1;
 			avgMag /= size - 1;
 			sd.x -= (size*(mean.x*mean.x));
 			sd.x /= (size - 1);
 			sd.y -= (size*(mean.y*mean.y));
 			sd.y /= (size - 1);
+			velocity.x /= size - 1;
+			velocity.y /= size - 1;
 			out << mean.x << "," << mean.y << ",";
 			out << sd.y << "," << sd.y << ",";
 			out << avgMag << ",";
 			out << avgVel << ",";
+			out << velocity.x << ",";
+			out << velocity.y << ",";
+			out << subject.OutOfMonitor << ",";
 			out << subject.timeVector.size() << ",";
 			out << subject.diagnosis << std::endl;
 		}
@@ -244,12 +245,18 @@ void ASDClassification::WriteArffFile(std::string file)
 	std::string sdX = "@ATTRIBUTE sdX NUMERIC";
 	std::string sdY = "@ATTRIBUTE sdY NUMERIC";
 	std::string mag = "@ATTRIBUTE mag NUMERIC";
-	std::string velocity = "@ATTRIBUTE velocity NUMERIC";
+	std::string avgVel = "@ATTRIBUTE avgVel NUMERIC";
 	std::string fix = "@ATTRIBUTE fix NUMERIC";
+	std::string velocityX = "@ATTRIBUTE velocityX NUMERIC";
+	std::string velocityY = "@ATTRIBUTE velocityY NUMERIC";
+	std::string outMonitor = "@ATTRIBUTE outMonitor NUMERIC";
 	out << meanX << std::endl << meanY << std::endl;
 	out << sdX << std::endl << sdY << std::endl;
 	out << mag << std::endl;
-	out << velocity << std::endl;
+	out << avgVel << std::endl;
+	out << velocityX << std::endl;
+	out << velocityY << std::endl;
+	out << outMonitor << std::endl;
 	out << fix << std::endl;
 	out << "@ATTRIBUTE class { low, medium, high, ASD }\n"
 		<< "\n@DATA\n";

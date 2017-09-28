@@ -21,6 +21,9 @@ struct SubjectData
 	std::vector<time_t> timeVector;
 	// Vector to store the time at which frame happened -Diego
 	std::vector<long> frameData; 	
+	
+	// Number of times subject looked outside of the monitor
+	float OutOfMonitor;
 
 	time_t saveTime = 0;
 

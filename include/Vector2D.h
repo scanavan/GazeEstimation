@@ -4,7 +4,7 @@
 #include <cmath>
 struct Vector2D
 {
-	Vector2D(int _x, int _y) : x(_x), y(_y) {}
+	Vector2D(float _x, float _y) : x(_x), y(_y) {}
 	Vector2D() : x(0), y(0) {}
 	int x;
 	int y;
@@ -40,12 +40,17 @@ struct Vector2D
 		
 		return std::sqrt(std::pow(((float)(x - vector.x)), 2) + std::pow(((float)(y - vector.y)), 2));
 	}
-	float Velocity(Vector2D& vector, long time_frame)
+	float Velocity_overall(Vector2D& vector, long time_frame)
 	{
-		// Function returns velocity calling mangnitude to calculate the distance between two points, I left these test lines in here in case you wanted to test the things I talked about - Diego
-		//float dummie = Magnitude(vector);
 		//std::cout << "magnitude:  " << dummie << "time in ms: " << time_frame << "Velocity: " << dummie/time_frame << "X and Ys" << x << " " << y << " "<< vector.x << " " << vector.y << std::endl;
 		return Magnitude(vector)/ time_frame;
 	}
+	
+	Vector2D Velocity_points( const Vector2D& vector, long time_frame )
+	{
+		return Vector2D(std::abs(vector.x - x)/ time_frame , std::abs(vector.y - y) / time_frame);
+
+	} 	
+
 };
 #endif
