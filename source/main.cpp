@@ -4,7 +4,9 @@
 #include <boost/asio/read.hpp>
 #include "EyeTrackingData.h"
 #include "ASDClassification.h"
-
+#include <time.h>
+#include <stdio.h>
+#include <chrono>
 //run either real time with iMotions or load NDAR data to analyze
 void RealTime();
 void NDAR();
@@ -68,9 +70,21 @@ void RealTime()
 }
 void NDAR()
 {
+	auto start = std::chrono::system_clock::now();	
 	ASDClassification classify;
 	classify.ReadCSVFile("./GazeData/SubjectData.csv");
+	auto start_parse = std::chrono::system_clock::now();
 	classify.ParseTSVFiles("./GazeData/tsvData/");
-	classify.WriteArffFile("./output/VelocityTestNew.arff");
-	//classify.CreateDisplayImageOfGaze();
+	auto end_parse = std::chrono::system_clock::now();
+	classify.WriteArffFile("./output/VelocityTest.arff");
+	auto end = std::chrono::system_clock::now();
+
+	std::chrono::duration<double> elapsed_seconds_parse = end_parse-start_parse;
+	std::chrono::duration<double> elapsed_seconds = end-start;
+	std::cout<< "Overall program took: " << elapsed_seconds.count() << std::endl;
+	std::cout << "Program used to take: 275s" << std::endl;
+
+	std::cout << "TSV Files took: " << elapsed_seconds_parse.count() <<std::endl;
+	std::cout << "TSV Files used to take: 273s" << std::endl;
+//	classify.CreateDisplayImageOfGaze();
 }

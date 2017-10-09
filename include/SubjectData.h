@@ -23,7 +23,7 @@ struct SubjectData
 	std::vector<long> frameData; 	
 	
 	// Number of times subject looked outside of the monitor
-	float OutOfMonitor;
+	long OutOfMonitor = 0;
 
 	time_t saveTime = 0;
 

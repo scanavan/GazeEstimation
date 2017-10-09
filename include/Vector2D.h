@@ -5,9 +5,9 @@
 struct Vector2D
 {
 	Vector2D(float _x, float _y) : x(_x), y(_y) {}
-	Vector2D() : x(0), y(0) {}
-	int x;
-	int y;
+	Vector2D() : x(0.f), y(0.f) {}
+	float x;
+	float y;
 	friend std::ostream &operator<<(std::ostream& os, Vector2D& vector)
 	{
 		os << "(" << vector.x << ", " << vector.y << ")";
@@ -37,20 +37,17 @@ struct Vector2D
 	}
 	float Magnitude(Vector2D& vector)
 	{
-		
 		return std::sqrt(std::pow(((float)(x - vector.x)), 2) + std::pow(((float)(y - vector.y)), 2));
 	}
 	float Velocity_overall(Vector2D& vector, long time_frame)
 	{
-		//std::cout << "magnitude:  " << dummie << "time in ms: " << time_frame << "Velocity: " << dummie/time_frame << "X and Ys" << x << " " << y << " "<< vector.x << " " << vector.y << std::endl;
 		return Magnitude(vector)/ time_frame;
 	}
-	
+
 	Vector2D Velocity_points( const Vector2D& vector, long time_frame )
 	{
 		return Vector2D(std::abs(vector.x - x)/ time_frame , std::abs(vector.y - y) / time_frame);
-
-	} 	
+	}
 
 };
 #endif
