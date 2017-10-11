@@ -20,10 +20,13 @@ struct SubjectData
 
 	std::vector<time_t> timeVector;
 	// Vector to store the time at which frame happened -Diego
-	std::vector<long> frameData; 	
-	
+	std::vector<long> frameData;
+
 	// Number of times subject looked outside of the monitor
 	long OutOfMonitor = 0;
+
+	// Number of times negative value is found tand we have fixation time.
+	long negativeGaze = 0;
 
 	time_t saveTime = 0;
 
@@ -36,16 +39,16 @@ struct SubjectData
 	//Time of Test
 	std::string DateTime;
 
-	//X Gaze Vector2D Right Eye 
+	//X Gaze Vector2D Right Eye
 	float GazeVector2DXR;
 
-	//Y Gaze Vector2D Right Eye 
+	//Y Gaze Vector2D Right Eye
 	float GazeVector2DYR;
 
-	//X Gaze Vector2D Left Eye 
+	//X Gaze Vector2D Left Eye
 	float GazeVector2DXL;
 
-	//Y Gaze Vector2D LEft Eye 
+	//Y Gaze Vector2D LEft Eye
 	float GazeVector2DYL;
 
 	//Fixation Number

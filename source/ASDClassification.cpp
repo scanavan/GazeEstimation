@@ -63,7 +63,7 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 
 	std::vector<std::string> split;
 	std::getline(in, line);
-	
+
 	// Find our label row
 	while (std::getline(in, line))
 	{
@@ -92,7 +92,7 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 	}
 	while (!in.eof() || in.peek() != EOF)
 	{
-			// We move to the next line first since we started at the header. 
+			// We move to the next line first since we started at the header.
 			std::getline(in, line);
 			boost::split(split, line, boost::is_any_of("\t"));
 
@@ -102,14 +102,15 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 				{
 					if (!split.at(Fixation_index).empty()) //make sure we actually have data
 					{
-						if ( boost::lexical_cast<int>(split.at(Y_index)) < -1024 || boost::lexical_cast<int>(split.at(Y_index)) < -1280 )
+						if ( boost::lexical_cast<int>(split.at(Y_index)) < 0 || boost::lexical_cast<int>(split.at(Y_index)) < 0 )
 						{
-							// We cannot have X or Y Gaze values smaller than the resolution of the screen, these values are skipped.
+							// We cannot have X or Y Gaze values negative, therefore we increment tracker and continue.
+							++data.negativeGaze;
 							continue;
 						}
-						
+
 						data.avgGaze.emplace_back(boost::lexical_cast<int>(split.at(X_index)), boost::lexical_cast<int>(split.at(Y_index)));
-      						
+
 						data.frameData.push_back(getTimeInMs(split.at(time_index))); // Store the time at which frame happened. -Diego
 
 						data.fixationIndex = boost::lexical_cast<int>(split.at(Fixation_index));
@@ -200,33 +201,33 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 			out << subject.OutOfMonitor << ",";
 			out << centroid << ",";
 			out << frequency.at(0) << ",";
-                        out << frequency.at(1) << ",";
-                        out << frequency.at(2) << ",";
-                        out << frequency.at(3) << ",";
-                        out << frequency.at(4) << ",";
-                        out << frequency.at(5) << ",";
-                        out << frequency.at(6) << ",";
-                        out << frequency.at(7) << ",";
-                        out << frequency.at(8) << ",";
-
+      out << frequency.at(1) << ",";
+      out << frequency.at(2) << ",";
+      out << frequency.at(3) << ",";
+      out << frequency.at(4) << ",";
+      out << frequency.at(5) << ",";
+      out << frequency.at(6) << ",";
+      out << frequency.at(7) << ",";
+      out << frequency.at(8) << ",";
 			out << grid.at(0).x << ",";
 			out << grid.at(1).x << ",";
 			out << grid.at(2).x << ",";
 			out << grid.at(3).x << ",";
 			out << grid.at(4).x << ",";
-                        out << grid.at(5).x << ",";
-                        out << grid.at(6).x << ",";
-                        out << grid.at(7).x << ",";
+      out << grid.at(5).x << ",";
+      out << grid.at(6).x << ",";
+      out << grid.at(7).x << ",";
 			out << grid.at(8).x << ",";
 			out << grid.at(0).y << ",";
-                        out << grid.at(1).y << ",";
-                        out << grid.at(2).y << ",";
-                        out << grid.at(3).y << ",";
-                        out << grid.at(4).y << ",";
-                        out << grid.at(5).y << ",";
-                        out << grid.at(6).y << ",";
-                        out << grid.at(7).y << ",";
-                        out << grid.at(8).y << ",";
+      out << grid.at(1).y << ",";
+      out << grid.at(2).y << ",";
+      out << grid.at(3).y << ",";
+      out << grid.at(4).y << ",";
+      out << grid.at(5).y << ",";
+      out << grid.at(6).y << ",";
+      out << grid.at(7).y << ",";
+      out << grid.at(8).y << ",";
+			out << subject.negativeGaze << ",";
 			out << subject.timeVector.size() << ",";
 			out << subject.diagnosis << std::endl;
 		}
@@ -261,15 +262,14 @@ void ASDClassification::WriteArffFile(std::string file)
 	std::string fix = "@ATTRIBUTE fix NUMERIC";
 
 	std::string bottonLeftFreq = "@ATTRIBUTE bottonLeftFreq NUMERIC";
-        std::string leftMiddleFreq = "@ATTRIBUTE leftMiddleFreq NUMERIC";
-        std::string leftTopFreq = "@ATTRIBUTE leftTopFreq NUMERIC";
-        std::string bottonMiddleFreq = "@ATTRIBUTE bottonMiddleFreq NUMERIC";
-        std::string midMiddleFreq = "@ATTRIBUTE midMiddleFreq NUMERIC";
-        std::string topMiddleFreq = "@ATTRIBUTE topMiddleFreq NUMERIC";
-        std::string bottomRightFreq = "@ATTRIBUTE bottomRightFreq NUMERIC";
-        std::string midRightFreq = "@ATTRIBUTE midRightFreq NUMERIC";
-        std::string topRightFreq = "@ATTRIBUTE topRightFreq NUMERIC";
-
+  std::string leftMiddleFreq = "@ATTRIBUTE leftMiddleFreq NUMERIC";
+  std::string leftTopFreq = "@ATTRIBUTE leftTopFreq NUMERIC";
+  std::string bottonMiddleFreq = "@ATTRIBUTE bottonMiddleFreq NUMERIC";
+  std::string midMiddleFreq = "@ATTRIBUTE midMiddleFreq NUMERIC";
+  std::string topMiddleFreq = "@ATTRIBUTE topMiddleFreq NUMERIC";
+  std::string bottomRightFreq = "@ATTRIBUTE bottomRightFreq NUMERIC";
+  std::string midRightFreq = "@ATTRIBUTE midRightFreq NUMERIC";
+  std::string topRightFreq = "@ATTRIBUTE topRightFreq NUMERIC";
 	std::string bottonLeftX = "@ATTRIBUTE bottonLeftX NUMERIC";
 	std::string leftMiddleX = "@ATTRIBUTE leftMiddleX NUMERIC";
 	std::string leftTopX = "@ATTRIBUTE leftTopX NUMERIC";
@@ -280,14 +280,15 @@ void ASDClassification::WriteArffFile(std::string file)
 	std::string midRightX = "@ATTRIBUTE midRightX NUMERIC";
 	std::string topRightX = "@ATTRIBUTE topRightX NUMERIC";
 	std::string bottonLeftY = "@ATTRIBUTE bottonLeftY NUMERIC";
-        std::string leftMiddleY = "@ATTRIBUTE leftMiddleY NUMERIC";
-        std::string leftTopY = "@ATTRIBUTE leftTopY NUMERIC";
-        std::string bottonMiddleY = "@ATTRIBUTE bottonMiddleY NUMERIC";
-        std::string midMiddleY = "@ATTRIBUTE midMiddleY NUMERIC";
-        std::string topMiddleY = "@ATTRIBUTE topMiddleY NUMERIC";
-        std::string bottomRightY = "@ATTRIBUTE bottomRightY NUMERIC";
-        std::string midRightY = "@ATTRIBUTE midRightY NUMERIC";
-        std::string topRightY = "@ATTRIBUTE topRightY NUMERIC";
+  std::string leftMiddleY = "@ATTRIBUTE leftMiddleY NUMERIC";
+  std::string leftTopY = "@ATTRIBUTE leftTopY NUMERIC";
+  std::string bottonMiddleY = "@ATTRIBUTE bottonMiddleY NUMERIC";
+  std::string midMiddleY = "@ATTRIBUTE midMiddleY NUMERIC";
+  std::string topMiddleY = "@ATTRIBUTE topMiddleY NUMERIC";
+  std::string bottomRightY = "@ATTRIBUTE bottomRightY NUMERIC";
+  std::string midRightY = "@ATTRIBUTE midRightY NUMERIC";
+  std::string topRightY = "@ATTRIBUTE topRightY NUMERIC";
+	std::string negativeGaze = "@ATTRIBUTE negativeGaze NUMERIC";
 
 
 	out << meanX << std::endl << meanY << std::endl;
@@ -300,33 +301,34 @@ void ASDClassification::WriteArffFile(std::string file)
 	out << centroid << std::endl;
 
 	out << bottonLeftFreq << std::endl;
-        out << leftMiddleFreq << std::endl;
-        out << leftTopFreq << std::endl;
-        out <<  bottonMiddleFreq << std::endl;
-        out <<  midMiddleFreq << std::endl;
-        out <<  topMiddleFreq << std::endl;
-        out <<  bottomRightFreq << std::endl;
-        out <<  midRightFreq << std::endl;
-        out <<  topRightFreq << std::endl;
+  out << leftMiddleFreq << std::endl;
+  out << leftTopFreq << std::endl;
+  out <<  bottonMiddleFreq << std::endl;
+  out <<  midMiddleFreq << std::endl;
+  out <<  topMiddleFreq << std::endl;
+  out <<  bottomRightFreq << std::endl;
+  out <<  midRightFreq << std::endl;
+  out <<  topRightFreq << std::endl;
 
 	out << bottonLeftX << std::endl;
-        out << leftMiddleX << std::endl;
-        out << leftTopX << std::endl;
-        out <<  bottonMiddleX << std::endl;
-        out <<  midMiddleX << std::endl;
-        out <<  topMiddleX << std::endl;
-        out <<  bottomRightX << std::endl;
-        out <<  midRightX << std::endl;
-        out <<  topRightX << std::endl;
-        out <<  bottonLeftY << std::endl;
-        out <<  leftMiddleY << std::endl;
-        out <<  leftTopY << std::endl;
-        out <<  bottonMiddleY << std::endl;
-        out <<  midMiddleY << std::endl;
-        out <<  topMiddleY << std::endl;
-        out <<  bottomRightY << std::endl;
-        out <<  midRightY << std::endl;
-        out << topRightY << std::endl;
+  out << leftMiddleX << std::endl;
+  out << leftTopX << std::endl;
+  out <<  bottonMiddleX << std::endl;
+  out <<  midMiddleX << std::endl;
+  out <<  topMiddleX << std::endl;
+  out <<  bottomRightX << std::endl;
+  out <<  midRightX << std::endl;
+  out <<  topRightX << std::endl;
+  out <<  bottonLeftY << std::endl;
+  out <<  leftMiddleY << std::endl;
+  out <<  leftTopY << std::endl;
+  out <<  bottonMiddleY << std::endl;
+  out <<  midMiddleY << std::endl;
+  out <<  topMiddleY << std::endl;
+  out <<  bottomRightY << std::endl;
+  out <<  midRightY << std::endl;
+  out << topRightY << std::endl;
+	out << negativeGaze << std::endl;
 	out << fix << std::endl;
 	out << "@ATTRIBUTE class { low, medium, high, ASD }\n"
 		<< "\n@DATA\n";
