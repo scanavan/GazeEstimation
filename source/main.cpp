@@ -4,6 +4,7 @@
 #include <boost/asio/read.hpp>
 #include "EyeTrackingData.h"
 #include "ASDClassification.h"
+#include "BatchWriter.h"
 #include <time.h>
 #include <stdio.h>
 #include <chrono>
@@ -76,7 +77,7 @@ void NDAR()
 	auto start_parse = std::chrono::system_clock::now();
 	classify.ParseTSVFiles("./GazeData/tsvData/");
 	auto end_parse = std::chrono::system_clock::now();
-	classify.WriteArffFile("./output/VelocityTest.arff");
+	classify.WriteArffFile("./output/AllFeatures.arff");
 	auto end = std::chrono::system_clock::now();
 
 	std::chrono::duration<double> elapsed_seconds_parse = end_parse-start_parse;
