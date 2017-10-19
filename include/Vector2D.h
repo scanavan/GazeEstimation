@@ -35,18 +35,20 @@ struct Vector2D
 	{
 		return Vector2D(x*vector.x, y*vector.y);
 	}
+
 	float Magnitude(Vector2D& vector)
 	{
 		return std::sqrt(std::pow(((float)(x - vector.x)), 2) + std::pow(((float)(y - vector.y)), 2));
 	}
+
 	float Velocity_overall(Vector2D& vector, long time_frame)
 	{
-		return Magnitude(vector)/ time_frame;
+		return Magnitude(vector)/ static_cast<float>(time_frame);
 	}
 
 	Vector2D Velocity_points( const Vector2D& vector, long time_frame )
 	{
-		return Vector2D(std::abs(vector.x - x)/ time_frame , std::abs(vector.y - y) / time_frame);
+		return Vector2D(std::abs(vector.x - x)/ time_frame , std::abs(vector.y - y) / static_cast<float>(time_frame));
 	}
 
 };

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Vector2D.h"
+#include "Frame.h"
 #include <iostream>
 
 struct SubjectData
@@ -21,6 +22,8 @@ struct SubjectData
 	std::vector<time_t> timeVector;
 	// Vector to store the time at which frame happened -Diego
 	std::vector<long> frameData;
+	// All frames, needed to calculate velocity at each grid, we need to remember the time when they happened. -Diego
+	std::vector<Frame> allFrames;
 
 	// Number of times subject looked outside of the monitor
 	long OutOfMonitor = 0;

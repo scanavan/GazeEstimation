@@ -52,8 +52,6 @@ void ASDClassification::ParseTSVFiles(std::string tsvDir)
 void ASDClassification::ParseTSVFile(SubjectData& data)
 {
 	std::string line;
-	int counter(0);
-
 	std::ifstream in(data.fileNameWithPath);
 
 	int fixCounter(0);
@@ -102,39 +100,46 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 				{
 					if (!split.at(Fixation_index).empty()) //make sure we actually have data
 					{
-						if ( boost::lexical_cast<int>(split.at(Y_index)) < 0 || boost::lexical_cast<int>(split.at(Y_index)) < 0 )
-						{
-							// We cannot have X or Y Gaze values negative, therefore we increment tracker and continue.
-							++data.negativeGaze;
-							continue;
-						}
 
-						data.avgGaze.emplace_back(boost::lexical_cast<int>(split.at(X_index)), boost::lexical_cast<int>(split.at(Y_index)));
-
-						data.frameData.push_back(getTimeInMs(split.at(time_index))); // Store the time at which frame happened. -Diego
-
-						data.fixationIndex = boost::lexical_cast<int>(split.at(Fixation_index));
-						if (fixCounter == 0) //gets initial data
+						if((boost::lexical_cast<int>(split.at(Y_index))) <= 1024 && (boost::lexical_cast<int>(split.at(X_index)) <= 1280))
 						{
-							time1 = split.at(2); //get time, need to convert time string into something we can add
-							time2 = time1;
-							tempFixationIndex = boost::lexical_cast<int>(split.at(Fixation_index));
-							fixCounter++; //dont want if statement to repeat
-						}
-						else
-						{
-							if (boost::lexical_cast<int>(split.at(Fixation_index)) == tempFixationIndex)
+							if ( boost::lexical_cast<int>(split.at(Y_index)) < 0 || boost::lexical_cast<int>(split.at(Y_index)) < 0 )
 							{
-								time1 = split.at(2);
-								data.saveTime += calculate_frame_duration(time1, time2);
+								// We cannot have X or Y Gaze values negative, therefore we increment tracker and continue.
+								++data.negativeGaze;
+								continue;
 							}
-							else // we are at next fixation
+
+							data.avgGaze.emplace_back(boost::lexical_cast<int>(split.at(X_index)), boost::lexical_cast<int>(split.at(Y_index)));
+							long time_in_ms = getTimeInMs(split.at(time_index));
+							data.frameData.push_back(time_in_ms); // Store the time at which frame happened. -Diego
+							data.allFrames.emplace_back(boost::lexical_cast<int>(split.at(X_index)), boost::lexical_cast<int>(split.at(Y_index)), time_in_ms );
+
+							data.fixationIndex = boost::lexical_cast<int>(split.at(Fixation_index));
+							if (fixCounter == 0) //gets initial data
 							{
-								data.timeVector.push_back(data.saveTime); // save accumulated time in a vector
-								data.saveTime = 0;
-								time1 = split.at(2);
+								time1 = split.at(2); //get time, need to convert time string into something we can add
+								time2 = time1;
 								tempFixationIndex = boost::lexical_cast<int>(split.at(Fixation_index));
+								fixCounter++; //dont want if statement to repeat
 							}
+							else
+							{
+								if (boost::lexical_cast<int>(split.at(Fixation_index)) == tempFixationIndex)
+								{
+									time1 = split.at(2);
+									data.saveTime += calculate_frame_duration(time1, time2);
+								}
+								else // we are at next fixation
+								{
+									data.timeVector.push_back(data.saveTime); // save accumulated time in a vector
+									data.saveTime = 0;
+									time1 = split.at(2);
+									tempFixationIndex = boost::lexical_cast<int>(split.at(Fixation_index));
+								}
+							}
+					} else {
+						++data.OutOfMonitor;
 						}
 					} else {
 					// If we get here it means we did not have fixation time in tsv file.
@@ -166,12 +171,12 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 			out  << gender << ","  << std::to_string(subject.age) << ",";
 			int size(static_cast<int>(subject.avgGaze.size()));
 
-			Vector2D temp;
-
-
 			std::vector<Vector2D> grid(screenGridAverages(subject.avgGaze));
 			std::vector<int> frequency(findFreqency(subject.avgGaze));
+			std::vector<std::vector<Frame>> separated_gaze(separateFrames(subject.allFrames));
+			std::vector<float> velocity_per_Grid(velocityAtEachGrid(separated_gaze));
 			centroid = avgToCentroid(subject.avgGaze);
+
 			for (int i = 0; i < size; ++i)
 			{
 				mean += subject.avgGaze.at(i);
@@ -227,12 +232,21 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
       out << grid.at(6).y << ",";
       out << grid.at(7).y << ",";
       out << grid.at(8).y << ",";
+			out << velocity_per_Grid.at(0) << ",";
+			out << velocity_per_Grid.at(1) << ",";
+			out << velocity_per_Grid.at(2) << ",";
+			out << velocity_per_Grid.at(3) << ",";
+			out << velocity_per_Grid.at(4) << ",";
+			out << velocity_per_Grid.at(5) << ",";
+			out << velocity_per_Grid.at(6) << ",";
+			out << velocity_per_Grid.at(7) << ",";
+			out << velocity_per_Grid.at(8) << ",";
 			out << subject.negativeGaze << ",";
 			out << subject.timeVector.size() << ",";
 			out << subject.diagnosis << std::endl;
 		}
 	}
-	//std::cout << count << std::endl;
+	// std::cout << std::endl;
 }
 void ASDClassification::WriteArffFile(std::string file)
 {
@@ -260,7 +274,6 @@ void ASDClassification::WriteArffFile(std::string file)
 	std::string outMonitor = "@ATTRIBUTE outMonitor NUMERIC";
 	std::string centroid = "@ATTRIBUTE centroid NUMERIC";
 	std::string fix = "@ATTRIBUTE fix NUMERIC";
-
 	std::string bottonLeftFreq = "@ATTRIBUTE bottonLeftFreq NUMERIC";
   std::string leftMiddleFreq = "@ATTRIBUTE leftMiddleFreq NUMERIC";
   std::string leftTopFreq = "@ATTRIBUTE leftTopFreq NUMERIC";
@@ -270,6 +283,7 @@ void ASDClassification::WriteArffFile(std::string file)
   std::string bottomRightFreq = "@ATTRIBUTE bottomRightFreq NUMERIC";
   std::string midRightFreq = "@ATTRIBUTE midRightFreq NUMERIC";
   std::string topRightFreq = "@ATTRIBUTE topRightFreq NUMERIC";
+
 	std::string bottonLeftX = "@ATTRIBUTE bottonLeftX NUMERIC";
 	std::string leftMiddleX = "@ATTRIBUTE leftMiddleX NUMERIC";
 	std::string leftTopX = "@ATTRIBUTE leftTopX NUMERIC";
@@ -279,6 +293,7 @@ void ASDClassification::WriteArffFile(std::string file)
 	std::string bottomRightX = "@ATTRIBUTE bottomRightX NUMERIC";
 	std::string midRightX = "@ATTRIBUTE midRightX NUMERIC";
 	std::string topRightX = "@ATTRIBUTE topRightX NUMERIC";
+
 	std::string bottonLeftY = "@ATTRIBUTE bottonLeftY NUMERIC";
   std::string leftMiddleY = "@ATTRIBUTE leftMiddleY NUMERIC";
   std::string leftTopY = "@ATTRIBUTE leftTopY NUMERIC";
@@ -288,6 +303,17 @@ void ASDClassification::WriteArffFile(std::string file)
   std::string bottomRightY = "@ATTRIBUTE bottomRightY NUMERIC";
   std::string midRightY = "@ATTRIBUTE midRightY NUMERIC";
   std::string topRightY = "@ATTRIBUTE topRightY NUMERIC";
+
+	std::string bottonLeftVelocity = "@ATTRIBUTE bottonLeftVelocity NUMERIC";
+	std::string leftMiddleVelocity = "@ATTRIBUTE leftMiddleVelocity NUMERIC";
+	std::string leftTopVelocity = "@ATTRIBUTE leftTopVelocity NUMERIC";
+	std::string bottonMiddleVelocity = "@ATTRIBUTE bottonMiddleVelocity NUMERIC";
+	std::string midMiddleVelocity = "@ATTRIBUTE midMiddleVelocity NUMERIC";
+	std::string topMiddleVelocity = "@ATTRIBUTE topMiddleVelocity NUMERIC";
+	std::string bottomRighVelocityt = "@ATTRIBUTE bottomRightVelocity NUMERIC";
+	std::string midRightVelocity = "@ATTRIBUTE midRightVelocity NUMERIC";
+	std::string topRighVelocityt = "@ATTRIBUTE topRightVelocity NUMERIC";
+
 	std::string negativeGaze = "@ATTRIBUTE negativeGaze NUMERIC";
 
 
@@ -319,6 +345,7 @@ void ASDClassification::WriteArffFile(std::string file)
   out <<  bottomRightX << std::endl;
   out <<  midRightX << std::endl;
   out <<  topRightX << std::endl;
+
   out <<  bottonLeftY << std::endl;
   out <<  leftMiddleY << std::endl;
   out <<  leftTopY << std::endl;
@@ -328,6 +355,17 @@ void ASDClassification::WriteArffFile(std::string file)
   out <<  bottomRightY << std::endl;
   out <<  midRightY << std::endl;
   out << topRightY << std::endl;
+
+	out << bottonLeftVelocity << std::endl;
+	out << leftMiddleVelocity << std::endl;
+	out << leftTopVelocity << std::endl;
+	out << bottonMiddleVelocity << std::endl;
+	out << midMiddleVelocity << std::endl;
+	out << topMiddleVelocity << std::endl;
+	out << bottomRighVelocityt << std::endl;
+	out << midRightVelocity << std::endl;
+	out << topRighVelocityt << std::endl;
+
 	out << negativeGaze << std::endl;
 	out << fix << std::endl;
 	out << "@ATTRIBUTE class { low, medium, high, ASD }\n"

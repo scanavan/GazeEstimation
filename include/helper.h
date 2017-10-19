@@ -1,5 +1,6 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "boost/lexical_cast.hpp"
+#include <cassert>
 using namespace boost::posix_time;
 using namespace boost::gregorian;
 const int h = 1024;
@@ -168,4 +169,66 @@ float avgToCentroid(std::vector<Vector2D>& v)
                 running_sum += std::sqrt(std::pow((point.x - 640), 2) + std::pow((point.y - 512), 2));
         }
         return (running_sum/v.size());
+}
+std::vector<std::vector<Frame>> separateFrames(std::vector<Frame> & v)
+{
+	std::vector<std::vector<Frame>> separeted_frames(9,std::vector<Frame>());
+	int i(0);
+
+	for(auto itr = v.begin(); itr != v.end(); ++itr, ++i){
+					//Bottom Left
+		if((v[i].x >= 0 && v[i].x <= w/3) && (v[i].y >= ((2*h)/3) && v[i].y <= h )){
+						separeted_frames.at(0).push_back(v[i]);
+					//Left Middle
+		} else if( (v[i].x >= 0 && v[i].x <= w/3)  && (v[i].y > h/3 && v[i].y < ((2*h)/3)) ){
+						separeted_frames.at(1).push_back(v[i]);
+					//Left Top
+		} else if( (v[i].x >= 0 && v[i].x <= w/3)  && (v[i].y >= 0  && v[i].y <= h/3)){
+						separeted_frames.at(2).push_back(v[i]);
+					//Middle Bottom
+		} else if((v[i].x > w/3 && v[i].x < ((2*w)/3))  && (v[i].y >= ((2*h)/3) && v[i].y <= h )){
+						separeted_frames.at(3).push_back(v[i]);
+					//Middle Middle
+		} else if((v[i].x > w/3 && v[i].x < ((2*w)/3))  && (v[i].y > h/3 && v[i].y < ((2*h)/3))){
+						separeted_frames.at(4).push_back(v[i]);
+					//Middle Top
+		} else if((v[i].x > w/3 && v[i].x < ((2*w)/3)) && (v[i].y >= 0  && v[i].y <= h/3)){
+						separeted_frames.at(5).push_back(v[i]);
+					//Right bottom
+		 } else if((v[i].x >= ((2*w)/3) && v[i].x <= w)  && (v[i].y >= ((2*h)/3) && v[i].y <= h )){
+						separeted_frames.at(6).push_back(v[i]);
+					//Right Middle
+		 } else if((v[i].x >= ((2*w)/3) && v[i].x <= w) && (v[i].y > h/3 && v[i].y < ((2*h)/3))){
+						separeted_frames.at(7).push_back(v[i]);
+					//Right Top
+		} else if((v[i].x >= ((2*w)/3) && v[i].x <= w) && (v[i].y >= 0  && v[i].y <= h/3)){
+						separeted_frames.at(8).push_back(v[i]);
+		}
+	}
+	return separeted_frames;
+}
+
+std::vector<float> velocityAtEachGrid(std::vector<std::vector<Frame>> & all_frames)
+{
+	std::vector<float> avg_velocity_at_each_grid(9, -1.f);
+	int loop_counter(0);
+	for( auto outervector = all_frames.begin(); outervector != all_frames.end(); ++outervector, ++loop_counter)
+	{
+			float velocity = 0.f;
+			if(outervector->empty()){
+				avg_velocity_at_each_grid[loop_counter] = -1;
+				continue;
+			}
+			for( auto frames_at_grid = outervector->begin(); frames_at_grid != outervector->end(); ++frames_at_grid)
+			{
+					if (frames_at_grid < outervector->end() - 1){
+						velocity += frames_at_grid->Velocity_overall(*(frames_at_grid + 1));
+					}
+			}
+			if(outervector->size() - 1 > 0 && velocity > 0.f ){
+				velocity = velocity / (outervector->size() - 1);
+				avg_velocity_at_each_grid[loop_counter] = velocity;
+			}
+	}
+	return avg_velocity_at_each_grid;
 }
