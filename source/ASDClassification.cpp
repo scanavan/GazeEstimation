@@ -70,14 +70,14 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 	}
 	if(in.eof())
 	{
-		std::cout << "Label was not find in a file, can't parse TSV." << std::endl;
+		std::cout << "Label was not found in a file, can't parse TSV." << std::endl;
 		std::cout.flush();
 		exit(EXIT_FAILURE);
 	}
 	boost::split(split, line, boost::is_any_of("\t")); // Split is a vector of strings of the header line at this moment.
 
 	// Find the offset of the columns that we will need and we make that our accesing indexes.
-  	int time_index =  std::find(split.begin(), split.end(), "DateTimeStampStartOffset") - split.begin();
+  int time_index =  std::find(split.begin(), split.end(), "DateTimeStampStartOffset") - split.begin();
 	int X_index = std::find(split.begin(), split.end(), "GazePointX") - split.begin();
 	int Y_index = std::find(split.begin(), split.end(), "GazePointY") - split.begin();
 	int Fixation_index = std::find(split.begin(), split.end(), "FixationIndex") - split.begin();
@@ -100,9 +100,6 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 				{
 					if (!split.at(Fixation_index).empty()) //make sure we actually have data
 					{
-
-						if((boost::lexical_cast<int>(split.at(Y_index))) <= 1024 && (boost::lexical_cast<int>(split.at(X_index)) <= 1280))
-						{
 							if ( boost::lexical_cast<int>(split.at(Y_index)) < 0 || boost::lexical_cast<int>(split.at(Y_index)) < 0 )
 							{
 								// We cannot have X or Y Gaze values negative, therefore we increment tracker and continue.
@@ -139,9 +136,6 @@ void ASDClassification::ParseTSVFile(SubjectData& data)
 								}
 							}
 					} else {
-						++data.OutOfMonitor;
-						}
-					} else {
 					// If we get here it means we did not have fixation time in tsv file.
 					++data.OutOfMonitor;
 					}
@@ -168,15 +162,15 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 			{
 				gender = 0;
 			}
-			out  << gender << ","  << std::to_string(subject.age) << ",";
+			out /* << gender << "," */ << std::to_string(subject.age) << ",";
 			int size(static_cast<int>(subject.avgGaze.size()));
 
-			std::vector<Vector2D> grid(screenGridAverages(subject.avgGaze));
+			// std::vector<Vector2D> grid(screenGridAverages(subject.avgGaze));
 			std::vector<int> frequency(findFreqency(subject.avgGaze));
 			std::vector<std::vector<Frame>> separated_gaze(separateFrames(subject.allFrames));
 			std::vector<float> velocity_per_Grid(velocityAtEachGrid(separated_gaze));
-			centroid = avgToCentroid(subject.avgGaze);
-
+		//	centroid = avgToCentroid(subject.avgGaze);
+/*
 			for (int i = 0; i < size; ++i)
 			{
 				mean += subject.avgGaze.at(i);
@@ -189,22 +183,22 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 					velocity += subject.avgGaze.at(i).Velocity_points(subject.avgGaze.at(i + 1), (subject.frameData.at(i+1) - subject.frameData.at(i)));
 				}
 			}
-
-			mean /= size;
-			avgVel /= size - 1;
-			avgMag /= size - 1;
+*/
+		//	mean /= size;
+		//	avgVel /= size - 1;
+		//	avgMag /= size - 1;
 		//	sd.x -= (size*(mean.x*mean.x));
 		//	sd.x /= (size - 1);
 		//	sd.y -= (size*(mean.y*mean.y));
-			velocity.x /= size - 1;
-			velocity.y /= size - 1;
-			out << mean.x << "," << mean.y << ",";
-			out << avgMag << ",";
-			out << avgVel << ",";
-			out << velocity.x << ",";
-			out << velocity.y << ",";
+		//	velocity.x /= size - 1;
+	//		velocity.y /= size - 1;
+	//		out << mean.x << "," << mean.y << ",";
+	//		out << avgMag << ",";
+		//	out << avgVel << ",";
+	//		out << velocity.x << ",";
+	//		out << velocity.y << ",";
 			out << subject.OutOfMonitor << ",";
-			out << centroid << ",";
+//			out << centroid << ",";
 			out << frequency.at(0) << ",";
       out << frequency.at(1) << ",";
       out << frequency.at(2) << ",";
@@ -214,7 +208,7 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
       out << frequency.at(6) << ",";
       out << frequency.at(7) << ",";
       out << frequency.at(8) << ",";
-			out << grid.at(0).x << ",";
+	/*		out << grid.at(0).x << ",";
 			out << grid.at(1).x << ",";
 			out << grid.at(2).x << ",";
 			out << grid.at(3).x << ",";
@@ -232,6 +226,7 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
       out << grid.at(6).y << ",";
       out << grid.at(7).y << ",";
       out << grid.at(8).y << ",";
+			 */
 			out << velocity_per_Grid.at(0) << ",";
 			out << velocity_per_Grid.at(1) << ",";
 			out << velocity_per_Grid.at(2) << ",";
@@ -241,7 +236,7 @@ void ASDClassification::WriteArffGazeVectors(std::ostream& out)
 			out << velocity_per_Grid.at(6) << ",";
 			out << velocity_per_Grid.at(7) << ",";
 			out << velocity_per_Grid.at(8) << ",";
-			out << subject.negativeGaze << ",";
+	//		out << subject.negativeGaze << ",";
 			out << subject.timeVector.size() << ",";
 			out << subject.diagnosis << std::endl;
 		}
@@ -261,12 +256,12 @@ void ASDClassification::WriteArffFile(std::string file)
 		<< "%\n"
 		<< "@RELATION asd\n"
 		<< "\n"
-		<< "@ATTRIBUTE gender NUMERIC\n"
+//		<< "@ATTRIBUTE gender NUMERIC\n"
 		<< "@ATTRIBUTE age NUMERIC\n";
 	std::string meanX = "@ATTRIBUTE meanX NUMERIC";
 	std::string meanY = "@ATTRIBUTE meanY NUMERIC";
-//	std::string sdX = "@ATTRIBUTE sdX NUMERIC";
-//	std::string sdY = "@ATTRIBUTE sdY NUMERIC";
+	std::string sdX = "@ATTRIBUTE sdX NUMERIC";
+	std::string sdY = "@ATTRIBUTE sdY NUMERIC";
 	std::string mag = "@ATTRIBUTE mag NUMERIC";
 	std::string avgVel = "@ATTRIBUTE avgVel NUMERIC";
 	std::string velocityX = "@ATTRIBUTE velocityX NUMERIC";
@@ -310,21 +305,21 @@ void ASDClassification::WriteArffFile(std::string file)
 	std::string bottonMiddleVelocity = "@ATTRIBUTE bottonMiddleVelocity NUMERIC";
 	std::string midMiddleVelocity = "@ATTRIBUTE midMiddleVelocity NUMERIC";
 	std::string topMiddleVelocity = "@ATTRIBUTE topMiddleVelocity NUMERIC";
-	std::string bottomRighVelocityt = "@ATTRIBUTE bottomRightVelocity NUMERIC";
+	std::string bottomRighVelocity = "@ATTRIBUTE bottomRightVelocity NUMERIC";
 	std::string midRightVelocity = "@ATTRIBUTE midRightVelocity NUMERIC";
-	std::string topRighVelocityt = "@ATTRIBUTE topRightVelocity NUMERIC";
+	std::string topRighVelocity = "@ATTRIBUTE topRightVelocity NUMERIC";
 
 	std::string negativeGaze = "@ATTRIBUTE negativeGaze NUMERIC";
 
 
-	out << meanX << std::endl << meanY << std::endl;
+/*	out << meanX << std::endl << meanY << std::endl;
 	//out << sdX << std::endl << sdY << std::endl;
 	out << mag << std::endl;
 	out << avgVel << std::endl;
 	out << velocityX << std::endl;
-	out << velocityY << std::endl;
+	out << velocityY << std::endl; */
 	out << outMonitor << std::endl;
-	out << centroid << std::endl;
+	//out << centroid << std::endl;
 
 	out << bottonLeftFreq << std::endl;
   out << leftMiddleFreq << std::endl;
@@ -335,7 +330,7 @@ void ASDClassification::WriteArffFile(std::string file)
   out <<  bottomRightFreq << std::endl;
   out <<  midRightFreq << std::endl;
   out <<  topRightFreq << std::endl;
-
+/*
 	out << bottonLeftX << std::endl;
   out << leftMiddleX << std::endl;
   out << leftTopX << std::endl;
@@ -355,18 +350,18 @@ void ASDClassification::WriteArffFile(std::string file)
   out <<  bottomRightY << std::endl;
   out <<  midRightY << std::endl;
   out << topRightY << std::endl;
-
+	*/
 	out << bottonLeftVelocity << std::endl;
 	out << leftMiddleVelocity << std::endl;
 	out << leftTopVelocity << std::endl;
 	out << bottonMiddleVelocity << std::endl;
 	out << midMiddleVelocity << std::endl;
 	out << topMiddleVelocity << std::endl;
-	out << bottomRighVelocityt << std::endl;
+	out << bottomRighVelocity << std::endl;
 	out << midRightVelocity << std::endl;
-	out << topRighVelocityt << std::endl;
+	out << topRighVelocity << std::endl;
 
-	out << negativeGaze << std::endl;
+	//out << negativeGaze << std::endl;
 	out << fix << std::endl;
 	out << "@ATTRIBUTE class { low, medium, high, ASD }\n"
 		<< "\n@DATA\n";
