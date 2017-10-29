@@ -71,10 +71,10 @@ void RealTime()
 }
 void NDAR()
 {
-	ASDClassification classify;
-	classify.ReadCSVFile("./GazeData/SubjectData.csv");
-	classify.ParseTSVFiles("./GazeData/tsvData/");
-	classify.WriteArffFile("./output/AllFeatures.arff");
+//	ASDClassification classify;
+//	classify.ReadCSVFile("./GazeData/SubjectData.csv");
+//	classify.ParseTSVFiles("./GazeData/tsvData/");
+//	classify.WriteArffFile("./output/AllFeatures.arff");
 
 	std::cout << "Figuring out best combination... " << std::endl;
 	BatchWriter writer;

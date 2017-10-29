@@ -7,7 +7,7 @@
 void BatchWriter::arffBatchWriter()
 {
 	std::ofstream file;
-	file.open("~/Desktop/ALLTest/arff.bat");
+	file.open("./ALLTest/arff.bat");
 
 	for (int i = 1; i < (1 << 22); ++i)
 	{
@@ -27,15 +27,15 @@ void BatchWriter::arffBatchWriter()
 		if (i & (1 << 11)) file << "12,";
 		if (i & (1 << 12)) file << "13,";
 		if (i & (1 << 13)) file << "14,";
-		if (i & (1 << 14)) file << "15";
-		if (i & (1 << 15)) file << "16";
-		if (i & (1 << 16)) file << "17";
-		if (i & (1 << 17)) file << "18";
-		if (i & (1 << 18)) file << "19";
-		if (i & (1 << 19)) file << "20";
-		if (i & (1 << 20)) file << "21";
+		if (i & (1 << 14)) file << "15,";
+		if (i & (1 << 15)) file << "16,";
+		if (i & (1 << 16)) file << "17,";
+		if (i & (1 << 17)) file << "18,";
+		if (i & (1 << 18)) file << "19,";
+		if (i & (1 << 19)) file << "20,";
+		if (i & (1 << 20)) file << "21,";
 
-		file << "22 -i ~/Desktop/ALLTest/ABCDEFGHIJKLMNOPQRSTUV.arff -o ~/Desktop/ALLTest/ARFF/";
+		file << "23 -i ./output/Allfeatures.arff -o ./ALLTest/ARFF/";
 
 		if (i & (1 << 0)) file << "A";
 		if (i & (1 << 1)) file << "B";
@@ -58,12 +58,11 @@ void BatchWriter::arffBatchWriter()
 		if (i & (1 << 18)) file << "S";
 		if (i & (1 << 19)) file << "T";
 		if (i & (1 << 20)) file << "U";
-		if (i & (1 << 21)) file << "V";
-
+		file << "V";
 		file << ".arff\n";
 
 	}
-
+	file.close();
 }
 
 
@@ -71,13 +70,13 @@ void BatchWriter::arffBatchWriter()
 void BatchWriter::RFWriter()
 {
 	std::ofstream file;
-	file.open("~/Desktop/ALLTest/ALLRandomForest.bat");
+	file.open("./ALLTest/ALLRandomForest.bat");
 
-	for (int i = 1; i < (1 << 15); ++i)
+	for (int i = 1; i < (1 << 22); ++i)
 	{
 		file << "java weka.classifiers.trees.RandomForest -t ";
 
-		file << "~/Desktop/ALLTest/RFWRITER/";
+		file << "./ALLTest/RFWRITER/";
 
 		if (i & (1 << 0)) file << "A";
 		if (i & (1 << 1)) file << "B";
@@ -100,9 +99,9 @@ void BatchWriter::RFWriter()
 		if (i & (1 << 18)) file << "S";
 		if (i & (1 << 19)) file << "T";
 		if (i & (1 << 20)) file << "U";
-		if (i & (1 << 21)) file << "V";
+		 file << "V";
 
-		file << ".arff > ~/Desktop/ALLTest/RFWRITER/";
+		file << ".arff > ./ALLTest/RFWRITER/";
 
 		if (i & (1 << 0)) file << "A";
 		if (i & (1 << 1)) file << "B";
@@ -125,9 +124,9 @@ void BatchWriter::RFWriter()
 		if (i & (1 << 18)) file << "S";
 		if (i & (1 << 19)) file << "T";
 		if (i & (1 << 20)) file << "U";
-		if (i & (1 << 21)) file << "V";
+		file << "V";
 
 		file << ".txt\n";
 	}
-
+	file.close();
 }
