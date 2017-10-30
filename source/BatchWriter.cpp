@@ -11,7 +11,7 @@ void BatchWriter::arffBatchWriter()
 
 	for (int i = 1; i < (1 << 22); ++i)
 	{
-		file << "java weka.filters.unsupervised.attribute.Remove -V -R ";
+		file << "start java weka.filters.unsupervised.attribute.Remove -V -R ";
 
 		if (i & (1 << 0)) file << "1,";
 		if (i & (1 << 1)) file << "2,";
@@ -35,7 +35,7 @@ void BatchWriter::arffBatchWriter()
 		if (i & (1 << 19)) file << "20,";
 		if (i & (1 << 20)) file << "21,";
 
-		file << "23 -i ./output/Allfeatures.arff -o ./ALLTest/ARFF/";
+		file << "22 -i ./output/Allfeatures.arff -o ./ALLTest/ARFF/";
 
 		if (i & (1 << 0)) file << "A";
 		if (i & (1 << 1)) file << "B";
@@ -74,9 +74,9 @@ void BatchWriter::RFWriter()
 
 	for (int i = 1; i < (1 << 22); ++i)
 	{
-		file << "java weka.classifiers.trees.RandomForest -t ";
+		file << "start java weka.classifiers.trees.RandomForest -t ";
 
-		file << "./ALLTest/RFWRITER/";
+		file << "./ALLTest/ARFF/";
 
 		if (i & (1 << 0)) file << "A";
 		if (i & (1 << 1)) file << "B";
