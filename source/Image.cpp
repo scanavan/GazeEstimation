@@ -3,11 +3,27 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
-Image::Image(int w, int h) :
+Image::Image(int w, int h, bool createBorder) :
 	  width(w)
 	, height(h)
 {
 	image = cv::Mat::zeros(width, height, CV_8UC3);
+	image.setTo(cv::Scalar(255, 255, 255));
+	if (createBorder)
+	{
+		for (int i = 0; i < image.rows; ++i)
+		{
+			for (int j = 0; j < image.cols; ++j)
+			{
+				if (i == 0 || i == image.rows - 1 || j == 0 || j == image.cols-1)
+				{
+					image.at<cv::Vec3b>(i, j)[0] = 0;
+					image.at<cv::Vec3b>(i, j)[1] = 0;
+					image.at<cv::Vec3b>(i, j)[2] = 0;
+				}
+			}
+		}
+	}
 }
 void Image::Display(std::string title)
 {
@@ -26,7 +42,7 @@ void Image::PlotVector2Ds(std::vector<Vector2D>vectors, SubjectData &subject)
 {
 	for (auto& Vector2D : vectors)
 	{
-		cv::circle(image, cv::Point(static_cast<int>(Vector2D.y)/3, static_cast<int>(Vector2D.x)/3), 1, cv::Scalar(0, 0, 255));
+		cv::circle(image, cv::Point(static_cast<int>(Vector2D.y)/3, static_cast<int>(Vector2D.x)/3), 1, cv::Scalar(0, 0, 0));
 	}
 	//save image w/ the classification
 	size_t lastIndex = subject.fileName.find_last_of(".");
