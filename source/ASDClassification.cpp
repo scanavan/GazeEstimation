@@ -29,7 +29,7 @@ void ASDClassification::CreateDisplayImageOfGaze()
 		// Added this for display purposes; this way we know when it is done parsing as well. Used manual flush as well as described in ParseTSVFile() -Diego
 		std::cout << "Displaying Image " << i << "\r";
 		std::cout.flush();
-		Image image(512, 512);
+		Image image(512, 512, true, true);
 		image.PlotVector2Ds(data.at(i).avgGaze, data.at(i));
 		image.Display(data.at(i).GetTitle());
 

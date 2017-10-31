@@ -8,7 +8,7 @@
 class Image
 {
 public:
-	Image(int w, int h, bool createBorder=true);
+	Image(int w, int h, bool createBorder=true, bool addGrids = true);
 	void Display(std::string title="Image");
 	void PlotVector2Ds(std::vector<Vector2D>vectors, SubjectData &subject);
 

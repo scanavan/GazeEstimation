@@ -3,7 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
-Image::Image(int w, int h, bool createBorder) :
+Image::Image(int w, int h, bool createBorder, bool addGrids) :
 	  width(w)
 	, height(h)
 {
@@ -24,6 +24,14 @@ Image::Image(int w, int h, bool createBorder) :
 			}
 		}
 	}
+	if (addGrids)
+	{
+
+		cv::line(image,cv::Point((w/3),0), cv::Point(w/3, h), cv::Scalar(255,0,0), 2,8, 0);
+		cv::line(image,cv::Point(((2*w)/3),0), cv::Point(((2*w)/3), h), cv::Scalar(255,0,0), 2,8, 0);
+		cv::line(image,cv::Point(0,(h/3)), cv::Point(w,(h/3)), cv::Scalar(255,0,0), 2,8, 0);
+		cv::line(image,cv::Point(0,((2*h)/3)), cv::Point(w,((2*h)/3)), cv::Scalar(255,0,0), 2,8, 0);
+	}
 }
 void Image::Display(std::string title)
 {
@@ -35,6 +43,11 @@ void Image::Display(std::string title)
 		{
 			cv::destroyWindow(title);
 			break;
+		}
+		if (cv::waitKey(33) == 'e')
+		{
+			cv::destroyWindow(title);
+			exit(EXIT_SUCCESS);
 		}
 	}
 }

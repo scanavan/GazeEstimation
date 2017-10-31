@@ -71,14 +71,36 @@ void RealTime()
 }
 void NDAR()
 {
-	//ASDClassification classify;
-	//classify.ReadCSVFile("./GazeData/SubjectData.csv");
-	//classify.ParseTSVFiles("./GazeData/tsvData/");
-	//classify.WriteArffFile("./output/AllFeatures.arff");
-
-	std::cout << "Figuring out best combination... " << std::endl;
+	ASDClassification classify;
+	classify.ReadCSVFile("./GazeData/SubjectData.csv");
+	classify.ParseTSVFiles("./GazeData/tsvData/");
+	classify.WriteArffFile("./output/AllFeatures.arff");
 	BatchWriter writer;
-	writer.arffBatchWriter();
-	writer.RFWriter();
-	//classify.CreateDisplayImageOfGaze();
+
+	// Ask the user if they want to create batch file
+	char input;
+	std::cout << "Do you want to make the batch/ssh files? (y/n): ";
+	std::cin >> input;
+	if(input == 'y'){
+		std::cout << "Figuring out best combination... " << std::endl;
+		writer.arffBatchWriter();
+		writer.RFWriter();
+	}
+
+	// Ask the user if they want to looking for the write combination
+	std::cout << "Do you want to calculate the best combination? (y/n): ";
+	std::cin >> input;
+	if(input == 'y')
+	{
+		std::pair <std::string,double> result;
+		result = writer.bestCombination();
+		std::cout << "Best combination at: " << result.first << "with " << result.second << "%" <<std::endl;
+	}
+	// Ask The user if they want to display/create the images.
+	std::cout << "Do you want to display/calculate grid Images? (y/n): ";
+	std::cin >> input;
+	if(input == 'y')
+	{
+		classify.CreateDisplayImageOfGaze();
+	}
 }
