@@ -423,3 +423,91 @@ void ASDClassification::ReadCSVFile(std::string csvFile, bool removeOutliers)
 	}
 	in.close();
 }
+void ASDClassification::CreateSubsetOfData()
+{
+	//this function creates of subset of data that has same number of subjects for each class
+	//and the exact same amount of gaze points
+	std::cout << "Creating subset of data..." << std::endl;
+	//get smallest count of class
+	unsigned low(0), med(0), high(0), asd(0), minGaze(1000000);
+	for (auto& subject : data)
+	{
+		if (subject.diagnosis.compare("low") == 0)
+			low++;
+		else if (subject.diagnosis.compare("medium") == 0)
+			med++;
+		else if (subject.diagnosis.compare("high") == 0)
+			high++;
+		else
+			asd++;
+
+		if (subject.avgGaze.size() < minGaze)
+		{
+			minGaze = subject.avgGaze.size();
+		}
+	}
+	int min = std::min({ low, med, high, asd });
+	//parse data and create new SubjectData
+	std::vector<SubjectData> temp;
+	low = 0;
+	med = 0;
+	high = 0;
+	asd = 0;
+	for (auto& subject : data)
+	{
+		std::vector<Vector2D> tempGaze;
+		//get vector of random data to select - this is NOT efficient as there is potential to have an infinite loop...
+		std::set<int> indices;
+		while (indices.size() < std::min(400.f, static_cast<float>(minGaze)))
+		{
+			int random = rand() % minGaze;
+			if (indices.find(random) == indices.end())
+			{
+				indices.insert(random);
+			}
+		}
+		//chop gaze points
+		for (unsigned i = 0; i<indices.size(); ++i)
+		{
+			//std::cout << *indices.begin() + i << " " << indices.size() << " " << minGaze << std::endl;
+			tempGaze.push_back(subject.avgGaze.at(*indices.begin() + i));
+		}
+		subject.avgGaze.clear();
+		subject.avgGaze = tempGaze;
+		if (subject.diagnosis.compare("low") == 0)
+		{
+			if (low < min)
+			{
+				++low;
+				temp.push_back(subject);
+			}
+		}
+		else if (subject.diagnosis.compare("medium") == 0)
+		{
+			if (med < min)
+			{
+				++med;
+				temp.push_back(subject);
+			}
+		}
+		else if (subject.diagnosis.compare("high") == 0)
+		{
+			if (high < min)
+			{
+				++high;
+				temp.push_back(subject);
+			}
+		}
+		else
+		{
+			if (asd < min)
+			{
+				++asd;
+				temp.push_back(subject);
+			}
+		}
+	}
+	data.clear();
+	data = temp;
+	std::cout << "Number of subjects in subset: " << data.size() << std::endl;
+}

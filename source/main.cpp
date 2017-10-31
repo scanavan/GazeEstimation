@@ -71,14 +71,22 @@ void RealTime()
 }
 void NDAR()
 {
+	char input;
+
 	ASDClassification classify;
 	classify.ReadCSVFile("./GazeData/SubjectData.csv");
 	classify.ParseTSVFiles("./GazeData/tsvData/");
+	std::cout << "Do you want to make a subset of all of the data? (y/n): ";
+	std::cin >> input;
+	if (input == 'y')
+	{
+		classify.CreateSubsetOfData();
+	}
 	classify.WriteArffFile("./output/AllFeatures.arff");
 	BatchWriter writer;
 
 	// Ask the user if they want to create batch file
-	char input;
+	
 	std::cout << "Do you want to make the batch/ssh files? (y/n): ";
 	std::cin >> input;
 	if(input == 'y'){
