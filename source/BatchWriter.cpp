@@ -244,7 +244,7 @@ void BatchWriter::splitArffWritter(int number_of_machines)
 				// Read line
 				std::getline(input_file, line);
 				// Put it in destination
-				output_file << line;
+				output_file << line << std::endl;
 				++line_number;
 
 			}
@@ -302,7 +302,7 @@ void BatchWriter::splitRFWritter(int number_of_machines)
 				// Read line
 				std::getline(input_file, line);
 				// Put it in destination
-				output_file << line;
+				output_file << line << std::endl;
 				++line_number;
 
 			}
