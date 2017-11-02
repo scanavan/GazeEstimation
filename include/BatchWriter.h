@@ -9,5 +9,7 @@ public:
 	void arffBatchWriter();
 	void RFWriter();
 	std::pair<std::string, double> bestCombination();
+	void splitArffWritter(int number_of_machines);
+	void splitRFWritter(int number_of_machines);
 };
 #endif

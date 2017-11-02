@@ -10,7 +10,7 @@ void BatchWriter::arffBatchWriter()
 	std::ofstream file;
 	file.open("./ALLTest/arff.bat");
 
-	for (int i = 1; i < (1 << 22); ++i)
+	for (int i = 1; i < (1 << 21); ++i)
 	{
 		file << "java weka.filters.unsupervised.attribute.Remove -V -R ";
 
@@ -73,7 +73,7 @@ void BatchWriter::RFWriter()
 	std::ofstream file;
 	file.open("./ALLTest/ALLRandomForest.bat");
 
-	for (int i = 1; i < (1 << 22); ++i)
+	for (int i = 1; i < (1 << 21); ++i)
 	{
 		file << "java weka.classifiers.trees.RandomForest -t ";
 
@@ -143,7 +143,7 @@ std::pair <std::string, double> BatchWriter::bestCombination()
 	double global_max = -1.0;
 	std::string path_to_best;
 
-	for (int i = 1; i < (1 << 22); ++i)
+	for (int i = 1; i < (1 << 21); ++i)
 	{
 		specific_file = "";
 		full_path = "";
@@ -197,4 +197,118 @@ std::pair <std::string, double> BatchWriter::bestCombination()
 
 	// Done looping through every .txt file
 	return std::pair<std::string, double>(path_to_best,global_max);
+}
+
+void BatchWriter::splitArffWritter(int number_of_machines)
+{
+	std::ofstream output_file;
+	std::ifstream input_file;
+	std::string line = "";
+	std::string original_batch_file = "./ALLTest/arff.bat";
+	std::string destination_file;
+
+	input_file.open(original_batch_file);
+
+	int line_number_original = 0;
+
+	// We need to figure out the number of line on the original file so we can can get the amount,
+	// of iterations per file
+	while (std::getline(input_file, line))
+	{
+		++line_number_original;
+	}
+	std::cout << "Total: " << line_number_original << std::endl;
+	input_file.close();
+
+	// Number of iterations per file
+	int number_of_lines_per_file = line_number_original/number_of_machines;
+	std::cout << "Commands per file: " << number_of_lines_per_file << std::endl;
+	// Need to open file one more time to start copying.
+	input_file.open(original_batch_file);
+
+	// We will create as many files as machines are.
+	for(int i = 1; i <= number_of_machines; ++i  )
+	{
+		// Calculating the starting point of the loop.
+		int starting_point = (number_of_lines_per_file * i) - number_of_lines_per_file;
+
+			// we need unique file names
+			destination_file = "./ALLTest/arff_devided_" + std::to_string(i) + ".bat";
+
+			// Open output file
+			output_file.open(destination_file);
+			// now that the file is where it's supposed to be, we can start copying.
+			int line_number = 0;
+			for (int j = starting_point; j <= (starting_point + number_of_lines_per_file); ++j)
+			{
+				// Read line
+				std::getline(input_file, line);
+				// Put it in destination
+				output_file << line;
+				++line_number;
+
+			}
+			line_number = 0;
+			// Close output file, we need to open a new one.
+			output_file.close();
+	}
+	input_file.close();
+	BatchWriter::splitRFWritter(number_of_machines);
+}
+
+void BatchWriter::splitRFWritter(int number_of_machines)
+{
+	std::cout << "RF Writter starts" << std::endl;
+	std::ofstream output_file;
+	std::ifstream input_file;
+	std::string line = "";
+	std::string original_batch_file = "./ALLTest/ALLRandomForest.bat";
+	std::string destination_file;
+
+	input_file.open(original_batch_file);
+
+	int line_number_original = 0;
+
+	// We need to figure out the number of line on the original file so we can can get the amount,
+	// of iterations per file
+	while (std::getline(input_file, line))
+	{
+		++line_number_original;
+	}
+	std::cout << "Total: " << line_number_original << std::endl;
+	input_file.close();
+
+	// Number of iterations per file
+	int number_of_lines_per_file = line_number_original/number_of_machines;
+	std::cout << "Commands per file: " << number_of_lines_per_file << std::endl;
+	// Need to open file one more time to start copying.
+	input_file.open(original_batch_file);
+
+	// We will create as many files as machines are.
+	for(int i = 1; i <= number_of_machines; ++i  )
+	{
+		// Calculating the starting point of the loop.
+		int starting_point = (number_of_lines_per_file * i) - number_of_lines_per_file;
+
+			// we need unique file names
+			destination_file = "./ALLTest/ALLRandomForest_devided_" + std::to_string(i) + ".bat";
+
+			// Open output file
+			output_file.open(destination_file);
+			// now that the file is where it's supposed to be, we can start copying.
+			int line_number = 0;
+			for (int j = starting_point; j <= (starting_point + number_of_lines_per_file); ++j)
+			{
+				// Read line
+				std::getline(input_file, line);
+				// Put it in destination
+				output_file << line;
+				++line_number;
+
+			}
+			line_number = 0;
+			// Close output file, we need to open a new one.
+			output_file.close();
+	}
+	input_file.close();
 }

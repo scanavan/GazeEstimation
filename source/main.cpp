@@ -74,25 +74,39 @@ void NDAR()
 	char input;
 
 	ASDClassification classify;
-	classify.ReadCSVFile("./GazeData/SubjectData.csv");
-	classify.ParseTSVFiles("./GazeData/tsvData/");
+	//classify.ReadCSVFile("./GazeData/SubjectData.csv");
+	//classify.ParseTSVFiles("./GazeData/tsvData/");
+
+	// Ask the user if they want to create a subset
 	std::cout << "Do you want to make a subset of all of the data? (y/n): ";
 	std::cin >> input;
 	if (input == 'y')
 	{
 		classify.CreateSubsetOfData();
 	}
+
+
 	classify.WriteArffFile("./output/AllFeatures.arff");
 	BatchWriter writer;
 
 	// Ask the user if they want to create batch file
-	
 	std::cout << "Do you want to make the batch/ssh files? (y/n): ";
 	std::cin >> input;
 	if(input == 'y'){
-		std::cout << "Figuring out best combination... " << std::endl;
+		std::cout << "Writting ARFF and RF writer... " << std::endl;
 		writer.arffBatchWriter();
 		writer.RFWriter();
+	}
+
+	// Ask the user if they want to separate files
+	std::cout << "Do you want to separate the batch/ssh files? (y/n): ";
+	std::cin >> input;
+	if(input == 'y'){
+		std::cout << "Please enter the number of machines to split on:";
+		int number;
+		std::cin >> number;
+		std::cout << "Separating Files... " << std::endl;
+		writer.splitArffWritter(number);
 	}
 
 	// Ask the user if they want to looking for the write combination
