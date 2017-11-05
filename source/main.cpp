@@ -120,7 +120,7 @@ void NDAR()
 	{
 		std::pair <std::string,double> result;
 		result = writer.bestCombination();
-		std::cout << "Best combination at: " << result.first << "with " << result.second << "%" <<std::endl;
+		std::cout << "Best combination at: " << result.first << " with " << result.second << "%" <<std::endl;
 	}
 	// Ask The user if they want to display/create the images.
 	std::cout << "Do you want to display/calculate grid Images? (y/n): ";

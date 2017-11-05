@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "boost/lexical_cast.hpp"
-
+#include "boost/algorithm/string/trim.hpp"
 
 // batch file writer for the arff combination of features A-G + T-Z
 void BatchWriter::arffBatchWriter()
@@ -142,9 +142,9 @@ std::pair <std::string, double> BatchWriter::bestCombination()
 	std::pair<std::string, double> best;
 	double global_max = -1.0;
 	std::string path_to_best;
-
 	for (int i = 1; i < (1 << 21); ++i)
 	{
+		int lineCount(0);
 		specific_file = "";
 		full_path = "";
 
@@ -173,28 +173,48 @@ std::pair <std::string, double> BatchWriter::bestCombination()
 
 		full_path.append(path);
 		full_path.append(specific_file);
-
+		full_path.append(".txt");
 		file_input.open(full_path);
+
+		if(!file_input.is_open())
+		{
+			file_input.close();
+			continue;
+		}
+		
+
 		std::string line;
 
-		std::getline(file_input, line);
+		//std::getline(file_input, line);
 
 		// Find our label row
 		while (std::getline(file_input, line))
 		{
-			if(line.find("Correctly Classified Instances") != std::string::npos)
+			//if(line.find("Correctly Classified Instances") != std::string::npos)
+			++lineCount;
+			if(lineCount==45)
 				break;
 		}
-		// split at 56 to 66
-		line = line.substr(56,10);
-		double local_max = boost::lexical_cast<double>(line);
-		if(local_max > global_max)
+		// split line
+		if (line.length() > 0)
 		{
-			global_max = local_max;
-			path_to_best = full_path;
+			line = line.substr(57, 8);
+			//remove leading and traling whitespace
+			boost::algorithm::trim_left(line);
+			boost::algorithm::trim_right(line);
+			float local_max = boost::lexical_cast<float>(line);
+			if (local_max > global_max)
+			{
+				global_max = local_max;
+				path_to_best = full_path;
+			}
 		}
+		else
+		{
+			std::cout << "Line 45 in " << full_path << " had a length of 0." << std::endl;
+		}
+		file_input.close();
 	}
-
 	// Done looping through every .txt file
 	return std::pair<std::string, double>(path_to_best,global_max);
 }
