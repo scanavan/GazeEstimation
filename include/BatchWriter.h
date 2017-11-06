@@ -8,8 +8,9 @@ public:
 	BatchWriter() {}
 	void arffBatchWriter();
 	void RFWriter();
-	std::pair<std::string, double> bestCombination();
+	void bestAndWorstCombination();
 	void splitArffWritter(int number_of_machines);
 	void splitRFWritter(int number_of_machines);
+	void getNFeatures(float best, float worst);
 };
 #endif

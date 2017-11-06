@@ -114,13 +114,12 @@ void NDAR()
 	}
 
 	// Ask the user if they want to looking for the write combination
-	std::cout << "Do you want to calculate the best combination? (y/n): ";
+	std::cout << "Do you want to calculate the best and worst accuracies? (y/n): ";
 	std::cin >> input;
 	if(input == 'y')
 	{
-		std::pair <std::string,double> result;
-		result = writer.bestCombination();
-		std::cout << "Best combination at: " << result.first << " with " << result.second << "%" <<std::endl;
+		std::cout << "Calculating the best and worst accuracies... " << std::endl;
+		writer.bestAndWorstCombination();
 	}
 	// Ask The user if they want to display/create the images.
 	std::cout << "Do you want to display/calculate grid Images? (y/n): ";
