@@ -44,7 +44,7 @@ Image::Image(int w, int h, bool createBorder, bool addGrids) :
 	}
 }
 
-void Image::Display(std::string title)
+void Image::Display(std::string title, std::string diagnosis)
 {
 	cv::namedWindow(title);
 	for (;;)
@@ -59,9 +59,10 @@ void Image::Display(std::string title)
 		// Saves the image
 		if(key == 's')
 		{
-			std::string image_name = "gaze_" + title + ".jpg";
+			std::string image_name = "gaze_" + diagnosis + ".jpg";
 			std::string path_to_image = "./output/images/" + image_name;
 			cv::imwrite(path_to_image, image);
+			std::cout << path_to_image << std::endl;
 		}
 		// There is no current feature to exit out of the caller loop, so we just end the whole program
 		if (key == 'e')
