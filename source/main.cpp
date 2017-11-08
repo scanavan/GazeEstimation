@@ -122,10 +122,17 @@ void NDAR()
 		writer.bestAndWorstCombination();
 	}
 	// Ask The user if they want to display/create the images.
-	std::cout << "Do you want to display/calculate grid Images? (y/n): ";
+	std::cout << "Do you want to display Images? (y/n): ";
 	std::cin >> input;
 	if(input == 'y')
 	{
 		classify.CreateDisplayImageOfGaze();
+	}
+
+	std::cout << "Do you want to create a collage with 4 images? You can only do this if you saved 4 images? (y/n): ";
+	std::cin >> input;
+	if(input == 'y')
+	{
+		classify.CreateCollageOfImages();
 	}
 }

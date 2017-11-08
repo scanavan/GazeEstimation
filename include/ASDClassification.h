@@ -15,6 +15,7 @@ public:
 	void CreateDisplayImageOfGaze();
 	void WriteArffFile(std::string file);
 	void CreateSubsetOfData();
+	void CreateCollageOfImages();
 
 private:
 	std::vector<SubjectData> data;

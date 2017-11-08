@@ -11,8 +11,10 @@
 #include "helper.h"
 #include <iterator>
 #include <algorithm>
+#include <boost/filesystem.hpp>
 using namespace boost::posix_time;
 using namespace boost::gregorian;
+using namespace boost::filesystem;
 
 ASDClassification::ASDClassification()
 {
@@ -36,6 +38,60 @@ void ASDClassification::CreateDisplayImageOfGaze()
 	}
 	std::cout << std::endl;
 }
+
+void ASDClassification::CreateCollageOfImages()
+{
+	std::string path = "./output/images/";
+	std::string paths_to_images[5];
+
+	int i = 0;
+
+	// Loop through the directory to find the path to the first 4 images.
+	for (directory_iterator itr(path); itr != directory_iterator() && i < 5; ++itr, ++i)
+	{
+			if (i == 0)
+			{
+				continue;
+			}
+	    paths_to_images[i] = itr->path().string();
+	}
+
+		// New image is twice the height and width of our previous ones since we are stacking 2.
+		int size = 1048;
+		int subset_size = 524;
+
+		// Initialize the collage image.
+		cv::Mat image_collection;
+		image_collection = cv::Mat::zeros(size, size, CV_8UC3);
+		image_collection.setTo(cv::Scalar(255, 255, 255));
+
+		// Initialize our already created image.
+		cv::Mat subset_image;
+
+		// Top left subset image
+		subset_image = cv::imread(paths_to_images[1]);
+		// Calling a constructor as a function :thinking: lol
+		subset_image.copyTo(image_collection(cv::Rect(0,0, subset_image.cols, subset_image.rows)));
+
+		// Top right subset image
+		subset_image = cv::imread(paths_to_images[2]);
+		subset_image.copyTo(image_collection(cv::Rect(size/2,0, subset_image.cols, subset_image.rows)));
+
+		// Bottom left subset image
+		subset_image = cv::imread(paths_to_images[3]);
+		subset_image.copyTo(image_collection(cv::Rect(0,size/2, subset_image.cols, subset_image.rows)));
+
+		// Bottom rigt subset image
+		subset_image = cv::imread(paths_to_images[4]);
+		subset_image.copyTo(image_collection(cv::Rect(size/2,size/2, subset_image.cols, subset_image.rows)));
+
+		// Saving the new image we created
+		std::string image_name = "gaze_collection_of_images.jpg";
+		std::string path_to_image = "./output/images/collection/" + image_name;
+		cv::imwrite(path_to_image, image_collection);
+
+}
+
 void ASDClassification::ParseTSVFiles(std::string tsvDir)
 {
 	float percent(1.f);
